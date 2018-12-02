@@ -3,6 +3,7 @@ var bodyParser = require('body-parser');
 var MongoClient = require('mongodb').MongoClient;
 var ObjectID = require('mongodb').ObjectID;
 const CONNECT_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/myapi';
+const port = 8081;
 
 var db = require('./db');
 var candidatesController = require('./controllers/candidates');
