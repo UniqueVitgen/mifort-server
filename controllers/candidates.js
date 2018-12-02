@@ -1,5 +1,12 @@
 var Candidates = require('../models/candidates.js');
 var bodyParser = require('body-parser');
+const cors = require('cors')
+
+const corsOptions = {
+  origin: 'https://yourdomain.com',
+  allowedHeaders: ["Origin", "X-Requested-With", "Content-Type", "Accept", "X-Access-Token"],
+  methods: "GET,HEAD,OPTIONS,PUT,PATCH,POST,DELETE"
+}
 
 exports.all = function(req, res) {
   Candidates.all(function(err, docs) {
@@ -7,9 +14,6 @@ exports.all = function(req, res) {
       console.error(err);
       return res.sendStatus(500);
     }
-    res.header('Access-Control-Allow-Origin', "*");
-    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
-    res.header('Access-Control-Allow-Headers', 'Content-Type');
     res.send(docs);
   })
 }
