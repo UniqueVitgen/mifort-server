@@ -2,7 +2,7 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var MongoClient = require('mongodb').MongoClient;
 var ObjectID = require('mongodb').ObjectID;
-const CONNECT_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/myapi';
+const CONNECT_URI = process.env.MONGODB_URI || 'mongodb://localhost/testdb';
 const port = 8081;
 
 var db = require('./db');
@@ -35,7 +35,9 @@ db.connect(CONNECT_URI, function(err, database) {
   if(err) {
     return console.log(err);
   }
-  app.listen(process.env.PORT || port, function() {
-    console.log('API app started')
+  var server = app.listen(process.env.PORT || port, function() {
+    console.log('API app started');
+  var port = server.address().port;
+  console.log("Express is working on port " + port);
   });
 })
