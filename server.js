@@ -2,6 +2,7 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var MongoClient = require('mongodb').MongoClient;
 var ObjectID = require('mongodb').ObjectID;
+const CONNECT_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/myapi';
 
 var db = require('./db');
 var candidatesController = require('./controllers/candidates');
@@ -29,7 +30,7 @@ app.put('/candidates/:id', candidatesController.update);
 app.delete('/candidates/:id', candidatesController.delete);
 
 
-db.connect('mongodb://localhost:27017/myapi', function(err, database) {
+db.connect(CONNECT_URI, function(err, database) {
   if(err) {
     return console.log(err);
   }
