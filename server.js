@@ -34,7 +34,7 @@ db.connect(CONNECT_URI, function(err, database) {
   if(err) {
     return console.log(err);
   }
-  app.listen(3012, function() {
+  app.listen(process.env.PORT || port, function() {
     console.log('API app started')
   });
 })
