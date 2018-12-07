@@ -20,6 +20,22 @@ exports.create = function (artist, cb) {
   })
 }
 
+exports.search = function (searchValue, cb) {
+  db.get().collection('candidates').find(candidate => {
+    const searchConst = searchValue.toLowerCase();
+    const fullName = (candidate.name + ' ' + candidate.surname).toLowerCase()
+    const name = candidate.name.toLowerCase();
+    const surname = candidate.surname.toLowerCase();
+    return fullName.indexOf(searchConst) > -1
+    ||
+    name.indexOf(searchConst) > -1
+    ||
+    surname.index(searchConst) > -1;
+  }).toArray(function(err, docs) {
+    cb(err, docs);
+  });
+}
+
 exports.update = function (id, artist, cb) {
   db.get().collection('candidates').updateOne(
     { _id: ObjectID(id)},

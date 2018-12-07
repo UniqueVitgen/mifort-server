@@ -5,6 +5,9 @@ var MongoClient = require('mongodb').MongoClient;
 var ObjectID = require('mongodb').ObjectID;
 const CONNECT_URI = process.env.MONGODB_URI || 'mongodb://localhost/testdb';
 const port = 8081;
+var mongoose = require('mongoose');
+mongoose.Promise = global.Promise;
+
 
 var db = require('./db');
 var candidatesController = require('./controllers/candidates');
@@ -24,6 +27,8 @@ var corsOptions = {
 }
 
 var app = express();
+
+mongoose.Promise = global.Promise;
 // var router = express.Router();
 // //use cors middleware
 // router.use(cors(corsOptions));
@@ -76,6 +81,9 @@ app.use(bodyParser.json());
 //app.use(bodyParser.json())
 
 
+var routes = require('./api/routes/todoListRoutes'); //importing route
+routes(app); //register the route
+
 app.get('/', function(req,res) {
   res.send({
     cats: [{ name: 'lilly' }, { name: 'lucy' }]
@@ -95,7 +103,7 @@ app.put('/candidate/:id', candidatesController.update);
 
 app.delete('/candidate/:id', candidatesController.delete);
 
-
+mongoose.connect(CONNECT_URI);
 db.connect(CONNECT_URI, function(err, database) {
   if(err) {
     return console.log(err);
