@@ -4,23 +4,24 @@ const CONNECT_URI = process.env.MONGODB_URI || 'mongodb://localhost/testdb';
 const PORT = process.env.PORT || 8081;
 var mongoose = require('mongoose');
 var cors = require('cors');
+const { Candidate, Vacancy, Skill } = require('./sequelize')
 
-Candidate = require('./models/candidates');
-Vacancy = require('./models/vacancy');
+// Candidate = require('./models/candidates');
+// Vacancy = require('./models/vacancy');
 
 var app = express();
 
-mongoose.Promise = global.Promise;
-mongoose.connect(CONNECT_URI);
+// mongoose.Promise = global.Promise;
+// mongoose.connect(CONNECT_URI);
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(cors());
 
 
-var routes = require('./routes/candidates'); //importing route
-var routesVacancy = require('./routes/vacancy'); //importing route
-routes(app); //register the route
-routesVacancy(app);
+// var routes = require('./routes/candidates'); //importing route
+// var routesVacancy = require('./routes/vacancy'); //importing route
+// routes(app); //register the route
+// routesVacancy(app);
 
 app.listen(PORT);
 
