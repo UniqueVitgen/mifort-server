@@ -89,11 +89,23 @@ Interview.belongsTo(CandidateVacancy)
 sequelize.sync({ force: true })
   .then(() => {
     console.log(`Database & tables created!`)
-  })
+  });
+
+Models = {
+  Candidate: Candidate,
+  Vacancy: Vacancy,
+  Skill: Skill,
+  Contact: Contact,
+  Responsibility: Responsibility,
+  Requirement: Requirement,
+  CandidateState: CandidateState,
+  Experience: Experience,
+  Team: Team,
+  Project: Project,
+  Attachment: Attachment,
+  Interview: Interview
+}
 
 module.exports = {
-  Candidate,
-  Vacancy,
-  Skill,
-  Interview
+  Models
 }
