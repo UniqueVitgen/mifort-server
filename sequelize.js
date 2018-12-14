@@ -29,7 +29,6 @@ const sequelize = new Sequelize('mifort_server', 'root', 'root', {
 const CandidateVacancy = sequelize.define('candidate_vacancy', {})
 const CandidateResponsibility = sequelize.define('candidate_responsibility', {})
 const CandidateSkill = sequelize.define('candidate_skill', {})
-const CandidateCandidateState = sequelize.define('candidate_candidate_state', {})
 const CandidateExperience = sequelize.define('candidate_experience', {})
 const CandidateContact = sequelize.define('candidate_contact', {})
 const CandidateAttachment = sequelize.define('candidate_attachment', {})
@@ -61,8 +60,6 @@ Candidate.belongsToMany(Responsibility, {through: CandidateResponsibility, uniqu
 Responsibility.belongsToMany(Candidate, {through: CandidateResponsibility, unique: false})
 Candidate.belongsToMany(Skill, {through: CandidateSkill, unique: false})
 Skill.belongsToMany(Candidate, {through: CandidateSkill, unique: false})
-Candidate.belongsToMany(CandidateState, {through: CandidateCandidateState, unique: false})
-CandidateState.belongsToMany(Candidate, {through: CandidateCandidateState, unique: false})
 Candidate.belongsToMany(Experience, {through: CandidateExperience, unique: false})
 Experience.belongsToMany(Candidate, {through: CandidateExperience, unique: false})
 Candidate.belongsToMany(Contact, {through: CandidateContact, unique: false})
@@ -83,6 +80,7 @@ Team.belongsToMany(Project, {through: ProjectTeam, unique: false})
 Project.belongsToMany(Team, {through: ProjectTeam, unique: false})
 
 Interview.belongsTo(CandidateVacancy)
+Candidate.belongsTo(CandidateState)
 
 
 
