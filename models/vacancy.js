@@ -24,7 +24,8 @@ module.exports = (sequelize, type) => {
         vacancyState: {
           type: type.ENUM,
           values: ['OPEN', 'CLOSE'],
-          allowNull: false
+          allowNull: false,
+          defaultValue: 'OPEN'
         },
         experienceYearsRequire: {
           type: type.INTEGER,

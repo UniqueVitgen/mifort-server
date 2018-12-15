@@ -22,12 +22,21 @@ exports.list_all_vacancies = function (req, res)  {
 
 
 function createAssociationObject(body) {
-             const skills = body.skills.map(skill => Models.Skill.findOrCreate({ where: { name: skill.name }, defaults: { name: skill.name }})
+            let skills;
+            if(body.skills) {
+              skills = body.skills.map(skill => Models.Skill.findOrCreate({ where: { name: skill.name }, defaults: { name: skill.name }})
                                      .spread((skill, created) => skill));
-             const candidatesPromise = body.candidates.map(skill => CandidateWorker.find_or_create_a_candidate(skill)
+            }
+            let candidatesPromise;
+            if(body.candidates) {
+              candidatesPromise = body.candidates.map(skill => CandidateWorker.find_or_create_a_candidate(skill)
                                      .spread((skill, created) => skill));
-             const requirementsPromise = body.requirements.map(skill => Models.Requirement.findOrCreate({ where: { name: skill.name }, defaults: { name: skill.name }})
+            }
+            let requirementsPromise;
+            if(body.requirements) {
+             requirementsPromise = body.requirements.map(skill => Models.Requirement.findOrCreate({ where: { name: skill.name }, defaults: { name: skill.name }})
                                      .spread((skill, created) => skill));
+            }
              return  {
                skills: skills,
                candidates: candidatesPromise,
@@ -35,13 +44,34 @@ function createAssociationObject(body) {
              }
 }
 
+function createAssociations(vacancy, promise) {
+new Promise((resolve, reject) => {
+  if (promise.skills) {
+  return Promise.all(promise.skills).then(storedExperiences => vacancy.setSkills(storedExperiences))
+  .then(() => vacancy)
+  }
+  else {
+  return vacancy;
+  }
+})
+.then(vacancy => {
+if(promise.candidates) { return Promise.all(promise.candidates).then(storedSkills => {console.log(storedSkills); return vacancy.setCandidates(storedSkills)}).then(() => vacancy) }
+else { return vacancy;}
+})
+.then(vacancy => {
+if(promise.attachments) {return Promise.all(promise.requirements).then(storedSkills => vacancy.setRequirements(storedSkills)).then(() => vacancy)}
+else {
+return vacancy;
+}}
+)
+
+}
+
 exports.create_a_vacancy = function(req, res)  {
   const body = req.body
   const promise = createAssociationObject(body);
   Models.Vacancy.create(body, {})
-    .then(vacancy => Promise.all(promise.skills).then(storedSkills => vacancy.setSkills(storedSkills)).then(() => vacancy))
-    .then(vacancy => Promise.all(promise.candidates).then(storedSkills => {console.log(storedSkills); return vacancy.setCandidates(storedSkills)}).then(() => vacancy))
-    .then(vacancy => Promise.all(promise.requirements).then(storedSkills => vacancy.setRequirements(storedSkills)).then(() => vacancy))
+    .then(vacancy => {return createAssociations(vacancy, promise)})
     .then(vacancy => Models.Vacancy.findOne({ where: {id: vacancy.id}, include: includeArray}))
     .then(vacancyWithAssociations => {
       return res.json(vacancyWithAssociations)
