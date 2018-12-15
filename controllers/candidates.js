@@ -1,143 +1,74 @@
-// var Candidates = require('../models/candidates.js');
-// var bodyParser = require('body-parser');
-// const cors = require('cors')
-//
-// const corsOptions = {
-//   origin: 'https://yourdomain.com',
-//   allowedHeaders: ["Origin", "X-Requested-With", "Content-Type", "Accept", "X-Access-Token"],
-//   methods: "GET,HEAD,OPTIONS,PUT,PATCH,POST,DELETE"
-// }
-//
-// exports.all = function(req, res) {
-//   Candidates.all(function(err, docs) {
-//     if(err) {
-//       console.error(err);
-//       return res.sendStatus(500);
-//     }
-//     res.send(docs);
-//   })
-// }
-//
-// exports.findById = function(req, res) {
-//   Candidates.findById(req.params.id, function(err, doc) {
-//     if(err) {
-//       console.error(err);
-//       return res.sendStatus(500);
-//     }
-//     res.send(doc);
-//   })
-// }
-//
-// exports.create = function(req, res) {
-//   console.log(req.body);
-//   var artist = {
-//   "name": req.body.name,
-//   "surname": req.body.surname,
-//   "birthday": req.body.birthday,
-//   "salaryInDollars": req.body.salaryInDollars,
-//   "candidateState": req.body.candidateState,
-//   "skills": req.body.skills,
-//   "experiences": req.body.experiences,
-//   "contacts": req.body.contacts,
-//   "attachments": req.body.attachments,
-//   "responsibilities": req.body.responsibilities
-// }
-//   Candidates.create(artist, function(err, result) {
-//     if(err) {
-//       console.error(err);
-//       return res.sendStatus(500);
-//     }
-//     res.send(artist);
-//   })
-// }
-//
-// exports.update = function(req, res) {
-//   Candidates.update(req.params.id,
-//     {
-//     "name": req.body.name,
-//     "surname": req.body.surname,
-//     "birthday": req.body.birthday,
-//     "salaryInDollars": req.body.salaryInDollars,
-//     "candidateState": req.body.candidateState,
-//     "skills": req.body.skills,
-//     "experiences": req.body.experiences,
-//     "contacts": req.body.contacts,
-//     "attachments": req.body.attachments,
-//     "responsibilities": req.responsibilities
-//   },
-//     function(err, result) {
-//     if(err) {
-//       console.error(err);
-//       return res.sendStatus(500);
-//     }
-//     res.sendStatus(200);
-//   })
-// }
-//
-// exports.delete = function(req, res) {
-//   Candidates.delete(req.params.id, function(err,result) {
-//     if(err) {
-//       console.error(err);
-//       return res.sendStatus(500);
-//     }
-//     res.sendStatus(200);
-//   })
-// }
+const {
+  Models
+} = require('../sequelize')
 
 
+const CandidateWorker = require('../workers/candidate');
+const {
+  includeArrayVacancy
+} = require('./vacancy.js')
 
-var mongoose = require('mongoose'),
-Task = mongoose.model('Candidate');
+const includeArray = [
+  Models.Skill, Models.Responsibility, Models.Attachment, Models.Experience, {model: Models.CandidateState, as: 'candidateState'}, Models.Contact
+]
 
-exports.list_all_candidates = function(req, res) {
-  Task.find({}, function(err, task) {
-    if (err)
-      res.send(err);
-    res.json(task);
-  });
+exports.includeArrayCandidate = includeArray;
+
+exports.list_all_candidates = function (req, res)  {
+  CandidateWorker.list_all_candidates().then(candidates => {
+      return res.json(candidates);})
+      .catch(err => res.status(400).json({ err: `User with id = [${err}] doesn\'t exist.`}))
 };
 
-
-
-
-exports.create_a_candidate = function(req, res) {
-  var new_task = new Task(req.body);
-  new_task.save(function(err, task) {
-    if (err)
-      res.send(err);
-    res.json(task);
-  });
+exports.create_a_candidate = function(req, res)  {
+  CandidateWorker.create_a_candidate(req.body)
+  .then(candidateWithAssociations => {
+    return res.json(candidateWithAssociations)
+  })
+  .catch(err => res.status(400).json({ err: `User with id = [${err}] doesn\'t exist.`}))
 };
 
-
-exports.read_a_candidate = function(req, res) {
-  Task.findById(req.params.id, function(err, task) {
-    if (err) {
-
-    }
-      // res.send(err);
-    res.json(task);
-  });
+exports.read_a_candidate = function(req, res)  {
+  CandidateWorker.read_a_candidate(req.params.id)
+    .then(candidateWithAssociations => {
+      return res.json(candidateWithAssociations)
+    })
+    .catch(err => res.status(400).json({ err: `User with id = [${err}] doesn\'t exist.`}))
 };
-
+exports.read_timeline = function(req, res)  {
+  Models.Candidate.findOne({ where: {id: req.params.id}, include: includeArray})
+    .then(candidateWithAssociations => {
+      let timeline = [];
+      timeline = timeline.concat(candidateWithAssociations.attachments);
+      if(candidateWithAssociations.contacts) {
+        timeline = timeline.concat(candidateWithAssociations.contacts)
+      }
+      timeline = timeline.sort((a,b) => {
+        return new Date(a.createdAt).getTime() < new Date(b.createdAt).getTime();
+      })
+      // return res.json(candidateWithAssociations)
+      res.json(timeline);
+    })
+    .catch(err => res.status(400).json({ err: `User with id = [${err}] doesn\'t exist.`}))
+};
 
 exports.update_a_candidate = function(req, res) {
-  Task.findOneAndUpdate({_id: req.params.id}, req.body, {new: true}, function(err, task) {
-    if (err)
-      res.send(err);
-    res.json(task);
-  });
-};
+  CandidateWorker.update_a_candidate(req.params.id, req.body).then(savedCandidate => {
+      res.status(200).send({
+        message: 'ok'
+      })
+    })
+  .catch(err => {
+    console.log(err);
+    res.status(400).json({ err: `User with id = [${err}] doesn\'t exist.`})
+  })
+}
 
-
-exports.delete_a_candidate = function(req, res) {
-
-
-  Task.remove({
-    _id: req.params.id
-  }, function(err, task) {
-    if (err)
-      res.send(err);
-    res.json({ message: 'Task successfully deleted' });
-  });
-};
+exports.delete_a_candidate = function(req, res)  {
+  CandidateWorker.delete_a_candidate(req.params.id).then(result => {
+    res.status(200).send({
+      message: 'OK'
+    })
+  })
+  .catch(err => res.status(400).json({ err: `${err}`}))
+}

@@ -3,81 +3,26 @@ const {
   Models
 } = require('../sequelize')
 
+const includeArray = [
+  Models.Skill, Models.Responsibility, Models.Attachment, Models.Experience, {model: Models.CandidateState, as: 'candidateState'}
+]
+  var todoList = require('../controllers/candidates');
+
 module.exports = function(app) {
 
-  app.post('/candidates', (req, res) => {
-    const body = req.body
-    const experiences = body.experiences.map(skill => Models.Experience.findOrCreate({ where: { jobPosition: skill.jobPosition, dateFrom: skill.dateFrom, dateTo: skill.dateTo }, defaults: { jobPosition: skill.jobPosition }})
-                                         .spread((skill, created) => skill));
-    const contacts = body.contacts.map(skill => Models.Contact.findOrCreate({ where: { contactDetails: skill.contactDetails,  contactType: skill.contactType}, defaults: { contactDetails: skill.contactDetails,  contactType: skill.contactType}})
-                                         .spread((skill, created) => skill));
-    const attachments = body.attachments.map(skill => Models.Attachment.findOrCreate({ where: { filePath: skill.filePath, attachmentType: skill.attachmentType }, defaults: { filePath: skill.filePath, attachmentType: 'CV' }})
-                                         .spread((skill, created) => skill));
-    const responsibilities = body.responsibilities.map(skill => Models.Responsibility.findOrCreate({ where: { name: skill.name }, defaults: { name: skill.name }})
-                                         .spread((skill, created) => skill));
-    const candateState = (() => {
-      Models.CandidateState.findOrCreate({ where: { name: body.candidateState.name }, defaults: { name: body.candidateState.name }})
-                                           .spread((skill, created) => skill)
-    });
-    const skills = body.skills.map(skill => Models.Skill.findOrCreate({ where: { name: skill.name }, defaults: { name: skill.name }})
-                                         .spread((skill, created) => skill))
-      // const tags = body.tags.map(tag => Tag.findOrCreate({ where: { name: tag.name }, defaults: { name: tag.name }})
-      //                                      .spread((tag, created) => tag));
-    Models.Candidate.create(body)
-    .then(candidate => Promise.all(experiences).then(storedExperiences => candidate.addExperiences(storedExperiences)).then(() => candidate))
-    .then(candidate => Promise.all(contacts).then(storedContacts => candidate.addContacts(storedContacts)).then(() => candidate))
-    .then(candidate => Promise.all(attachments).then(storedAttachments => candidate.addAttachments(storedAttachments)).then(() => candidate))
-    .then(candidate => Promise.all(responsibilities).then(storedResponsibilities => candidate.addResponsibilities(storedResponsibilities)).then(() => candidate))
-    // .then(candidate => candidate.addCandidateState(candateState).then(() => candidate))
-      .then(candidate => Promise.all(skills).then(storedSkills => candidate.addSkills(storedSkills)).then(() => candidate))
-      .then(candidate => Models.Candidate.findOne({ where: {id: candidate.id}, include: [Models.Skill, Models.Responsibility, Models.Attachment, Models.Experience, Models.CandidateState]}))
-      .then(candidateWithAssociations => {
-        return res.json(candidateWithAssociations)
-      })
-      .catch(err => res.status(400).json({ err: `User with id = [${err}] doesn\'t exist.`}))
-      // .then((candidate) => {
-      //   Promise.all(experiences).then(StoredExperiences => {
-      //     console.log(StoredExperiences);
-      //     candidate.addExperiences(StoredExperiences);
-      //   })
-      // })
-  });
+  // todoList Routes
+  app.route('/candidates')
+    .get(todoList.list_all_candidates)
+    .post(todoList.create_a_candidate);
 
-    app.put('/candidates/:candidateId?', (req, res) => {
-      const body = req.body
-      const experiences = body.experiences.map(skill => Models.Experience.findOrCreate({ where: { jobPosition: skill.jobPosition, dateFrom: skill.dateFrom, dateTo: skill.dateTo }, defaults: { jobPosition: skill.jobPosition }})
-                                           .spread((skill, created) => skill));
-      const contacts = body.contacts.map(skill => Models.Contact.findOrCreate({ where: { contactDetails: skill.contactDetails,  contactType: skill.contactType}, defaults: { contactDetails: skill.contactDetails,  contactType: skill.contactType}})
-                                           .spread((skill, created) => skill));
-      const attachments = body.attachments.map(skill => Models.Attachment.findOrCreate({ where: { filePath: skill.filePath, attachmentType: skill.attachmentType }, defaults: { filePath: skill.filePath, attachmentType: 'CV' }})
-                                           .spread((skill, created) => skill));
-      const responsibilities = body.responsibilities.map(skill => Models.Responsibility.findOrCreate({ where: { name: skill.name }, defaults: { name: skill.name }})
-                                           .spread((skill, created) => skill));
-      const candateState = (() => {
-        Models.CandidateState.findOrCreate({ where: { name: body.candidateState.name }, defaults: { name: body.candidateState.name }})
-                                             .spread((skill, created) => skill)
-      });
-      const skills = body.skills.map(skill => Models.Skill.findOrCreate({ where: { name: skill.name }, defaults: { name: skill.name }})
-                                           .spread((skill, created) => skill))
-        // const tags = body.tags.map(tag => Tag.findOrCreate({ where: { name: tag.name }, defaults: { name: tag.name }})
-        //                                      .spread((tag, created) => tag));
-      Models.Candidate.update(body, {where: {id: req.params.id}})
-      .then(candidate => Promise.all(experiences).then(storedExperiences => candidate.addExperiences(storedExperiences)).then(() => candidate))
-      .then(candidate => Promise.all(contacts).then(storedContacts => candidate.addContacts(storedContacts)).then(() => candidate))
-      .then(candidate => Promise.all(attachments).then(storedAttachments => candidate.addAttachments(storedAttachments)).then(() => candidate))
-      .then(candidate => Promise.all(responsibilities).then(storedResponsibilities => candidate.addResponsibilities(storedResponsibilities)).then(() => candidate))
-      // .then(candidate => candidate.addCandidateState(candateState).then(() => candidate))
-        .then(candidate => Promise.all(skills).then(storedSkills => candidate.addSkills(storedSkills)).then(() => candidate))
-        .then(candidate => Models.Candidate.findOne({ where: {id: candidate.id}, include: [Models.Skill, Models.Responsibility, Models.Attachment, Models.Experience, Models.CandidateState]}))
-        .then(candidateWithAssociations => {
-          return res.json(candidateWithAssociations)
-        })
-        .catch(err => res.status(400).json({ err: `User with id = [${err}] doesn\'t exist.`}))
-        // .then((candidate) => {
-        //   Promise.all(experiences).then(StoredExperiences => {
-        //     console.log(StoredExperiences);
-        //     candidate.addExperiences(StoredExperiences);
-        //   })
-        // })
-    });
+
+  app.route('/candidate/:id')
+    .get(todoList.read_a_candidate)
+    .put(todoList.update_a_candidate)
+    .delete(todoList.delete_a_candidate);
+
+app.route('/candidate/:id/timeline')
+    .get(todoList.read_timeline)
+  // app.route('/vacancy/:id/candidates')
+  //   .get(todoList.get_candidates)
 };

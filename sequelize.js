@@ -41,6 +41,9 @@ const ExperienceProject = sequelize.define('experience_project', {})
 
 const ProjectTeam = sequelize.define('project_team', {})
 
+const InterviewCandidate = sequelize.define('interview_candidate')
+const InterviewVacancy = sequelize.define('interview_vacancy')
+
 const Candidate = CandidateModel(sequelize, Sequelize);
 const Vacancy = VacancyModel(sequelize, Sequelize);
 const Skill = SkillModel(sequelize, Sequelize)
@@ -54,33 +57,38 @@ const Project = ProjectModel(sequelize, Sequelize)
 const Attachment = AttachmentModel(sequelize, Sequelize)
 const Interview = InverviewModel(sequelize, Sequelize)
 
-Candidate.belongsToMany(Vacancy, { through: CandidateVacancy, unique: false })
-Vacancy.belongsToMany(Candidate, { through: CandidateVacancy, unique: false })
-Candidate.belongsToMany(Responsibility, {through: CandidateResponsibility, unique: false})
-Responsibility.belongsToMany(Candidate, {through: CandidateResponsibility, unique: false})
-Candidate.belongsToMany(Skill, {through: CandidateSkill, unique: false})
-Skill.belongsToMany(Candidate, {through: CandidateSkill, unique: false})
-Candidate.belongsToMany(Experience, {through: CandidateExperience, unique: false})
-Experience.belongsToMany(Candidate, {through: CandidateExperience, unique: false})
-Candidate.belongsToMany(Contact, {through: CandidateContact, unique: false})
-Contact.belongsToMany(Candidate, {through: CandidateContact, unique: false})
-Candidate.belongsToMany(Attachment, {through: CandidateAttachment, unique: false})
-Attachment.belongsToMany(Candidate, {through: CandidateAttachment, unique: false})
+Candidate.belongsToMany(Vacancy, { through: CandidateVacancy, unique: false, onDelete:'CASCADE', onUpdate: 'CASCADE', underscore: false }, {underscored: false})
+Vacancy.belongsToMany(Candidate, { through: CandidateVacancy, unique: false, onDelete:'CASCADE', onUpdate: 'CASCADE'})
+Candidate.belongsToMany(Responsibility, {through: CandidateResponsibility, unique: false, onDelete:'CASCADE', onUpdate: 'CASCADE'})
+Responsibility.belongsToMany(Candidate, {through: CandidateResponsibility, unique: false, onDelete:'CASCADE', onUpdate: 'CASCADE'})
+Candidate.belongsToMany(Skill, {through: CandidateSkill, unique: false, onDelete:'CASCADE', onUpdate: 'CASCADE'})
+Skill.belongsToMany(Candidate, {through: CandidateSkill, unique: false, onDelete:'CASCADE', onUpdate: 'CASCADE'})
+Candidate.belongsToMany(Experience, {through: CandidateExperience, unique: false, onDelete:'CASCADE', onUpdate: 'CASCADE'})
+Experience.belongsToMany(Candidate, {through: CandidateExperience, unique: false, onDelete:'CASCADE', onUpdate: 'CASCADE'})
+Candidate.belongsToMany(Contact, {through: CandidateContact, unique: false, onDelete:'CASCADE', onUpdate: 'CASCADE'})
+Contact.belongsToMany(Candidate, {through: CandidateContact, unique: false, onDelete:'CASCADE', onUpdate: 'CASCADE'})
+Candidate.belongsToMany(Attachment, {through: CandidateAttachment, unique: false, onDelete:'CASCADE', onUpdate: 'CASCADE'})
+Attachment.belongsToMany(Candidate, {through: CandidateAttachment, unique: false, onDelete: 'CASCADE', onUpdate: 'CASCADE'})
 
 Contact.belongsTo(Candidate)
 
-Vacancy.belongsToMany(Skill, {through: VacancySkill, unique: false})
-Skill.belongsToMany(Vacancy, {through: VacancySkill, unique: false})
-Vacancy.belongsToMany(Requirement, {through: VacancyRequirements, unique: false})
-Requirement.belongsToMany(Vacancy, {through: VacancyRequirements, unique: false})
+Vacancy.belongsToMany(Skill, {through: VacancySkill, unique: false, onDelete: 'CASCADE', onUpdate: 'CASCADE'})
+Skill.belongsToMany(Vacancy, {through: VacancySkill, unique: false, onDelete: 'CASCADE', onUpdate: 'CASCADE'})
+Vacancy.belongsToMany(Requirement, {through: VacancyRequirements, unique: false, onDelete: 'CASCADE', onUpdate: 'CASCADE'})
+Requirement.belongsToMany(Vacancy, {through: VacancyRequirements, unique: false, onDelete: 'CASCADE', onUpdate: 'CASCADE'})
 
-Team.belongsToMany(Experience, {through: ExperienceTeam, unique: false})
-Experience.belongsToMany(Team, {through: ExperienceTeam, unique: false})
-Team.belongsToMany(Project, {through: ProjectTeam, unique: false})
-Project.belongsToMany(Team, {through: ProjectTeam, unique: false})
+Team.belongsToMany(Experience, {through: ExperienceTeam, unique: false, onDelete: 'CASCADE', onUpdate: 'CASCADE'})
+Experience.belongsToMany(Team, {through: ExperienceTeam, unique: false, onDelete: 'CASCADE', onUpdate: 'CASCADE'})
+Team.belongsToMany(Project, {through: ProjectTeam, unique: false, onDelete: 'CASCADE', onUpdate: 'CASCADE'})
+Project.belongsToMany(Team, {through: ProjectTeam, unique: false, onDelete: 'CASCADE', onUpdate: 'CASCADE'})
 
-Interview.belongsTo(CandidateVacancy)
-Candidate.belongsTo(CandidateState)
+// Interview.belongsTo(CandidateVacancy, {underscore: true})
+Interview.belongsToMany(Candidate, {through: InterviewCandidate, unique: false, onDelete: 'CASCADE', onUpdate: 'CASCADE'})
+Candidate.belongsToMany(Interview, {through: InterviewCandidate, unique: false, onDelete: 'CASCADE', onUpdate: 'CASCADE'})
+Interview.belongsToMany(Vacancy, {through: InterviewVacancy, unique: false, onDelete: 'CASCADE', onUpdate: 'CASCADE'})
+Vacancy.belongsToMany(Interview, {through: InterviewVacancy, unique: false, onDelete: 'CASCADE', onUpdate: 'CASCADE'})
+
+Candidate.belongsTo(CandidateState, {as: 'candidateState'})
 
 
 

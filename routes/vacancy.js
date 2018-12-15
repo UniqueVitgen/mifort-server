@@ -3,15 +3,16 @@ module.exports = function(app) {
 
   // todoList Routes
   app.route('/vacancies')
-    .get(todoList.list_all_candidates)
-    .post(todoList.create_a_candidate);
+    .get(todoList.list_all_vacancies)
+    .post(todoList.create_a_vacancy);
 
 
   app.route('/vacancy/:id')
-    .get(todoList.read_a_candidate)
-    .put(todoList.update_a_candidate)
-    .delete(todoList.delete_a_candidate);
+    .get(todoList.read_a_vacancy)
+    .put(todoList.update_a_vacancy)
+    .delete(todoList.delete_a_vacancy);
 
   app.route('/vacancy/:id/candidates')
-    .get(todoList.get_candidates)
+    .get(todoList.read_candidates_from_vacancy)
+    .put(todoList.update_candidates_from_vacancy)
 };

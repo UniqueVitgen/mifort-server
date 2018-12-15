@@ -5,12 +5,9 @@ module.exports = (sequelize, type) => {
           primaryKey: true,
           autoIncrement: true
         },
-        contactType: {
-          type: type.ENUM,
-          values: [ 'EMAIL', 'PHONE', 'SKYPE']
-        },
-        contactDetails: {
-          type: type.STRING
+        name: {
+          type: type.STRING,
+          allowNull: false
         }
     })
 }

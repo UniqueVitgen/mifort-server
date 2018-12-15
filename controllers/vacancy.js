@@ -1,68 +1,133 @@
+const {
+  Models
+} = require('../sequelize')
 
+const CandidateController = require('./candidates.js')
+const CandidateWorker = require('../workers/candidate')
+const includeArrayCandidate = CandidateController.includeArrayCandidate
+const includeArray = [
+  Models.Skill,
+  Models.Requirement,
+  {model:Models.Candidate,
+    include: [Models.Skill, Models.Responsibility, Models.Attachment, Models.Experience, {model: Models.CandidateState, as: 'candidateState'}, Models.Contact]}
+]
 
+exports.includeArrayVacancy = includeArray;
 
-var mongoose = require('mongoose'),
-Task = mongoose.model('Vacancy');
-
-exports.list_all_candidates = function(req, res) {
-  Task.find({}).populate('candidates').exec(function(err, task) {
-    if (err)
-      res.send(err);
-    res.json(task);
-  });
+exports.list_all_vacancies = function (req, res)  {
+  Models.Vacancy.findAll({include: includeArray}).then(vacancies => {
+      return res.json(vacancies);})
+    .catch(err => res.status(400).json({ err: `User with id = [${err}] doesn\'t exist.`}))
 };
 
-exports.get_candidates = function(req, res) {
-  Task.findOne({_id: req.params.id}).populate('candidates').exec(function(err, vacancy) {
-    if (err) {
-      res.send(err);
-    }
-    const candidates = vacancy.candidates;
-    res.json(candidates);
-  });
+
+function createAssociationObject(body) {
+             const skills = body.skills.map(skill => Models.Skill.findOrCreate({ where: { name: skill.name }, defaults: { name: skill.name }})
+                                     .spread((skill, created) => skill));
+             const candidatesPromise = body.candidates.map(skill => CandidateWorker.find_or_create_a_candidate(skill)
+                                     .spread((skill, created) => skill));
+             const requirementsPromise = body.requirements.map(skill => Models.Requirement.findOrCreate({ where: { name: skill.name }, defaults: { name: skill.name }})
+                                     .spread((skill, created) => skill));
+             return  {
+               skills: skills,
+               candidates: candidatesPromise,
+               requirements: requirementsPromise
+             }
 }
 
-
-
-
-exports.create_a_candidate = function(req, res) {
-  var new_task = new Task(req.body);
-  new_task.save(function(err, task) {
-    if (err)
-      res.send(err);
-    res.json(task);
-  });
+exports.create_a_vacancy = function(req, res)  {
+  const body = req.body
+  const promise = createAssociationObject(body);
+  Models.Vacancy.create(body, {})
+    .then(vacancy => Promise.all(promise.skills).then(storedSkills => vacancy.setSkills(storedSkills)).then(() => vacancy))
+    .then(vacancy => Promise.all(promise.candidates).then(storedSkills => {console.log(storedSkills); return vacancy.setCandidates(storedSkills)}).then(() => vacancy))
+    .then(vacancy => Promise.all(promise.requirements).then(storedSkills => vacancy.setRequirements(storedSkills)).then(() => vacancy))
+    .then(vacancy => Models.Vacancy.findOne({ where: {id: vacancy.id}, include: includeArray}))
+    .then(vacancyWithAssociations => {
+      return res.json(vacancyWithAssociations)
+    })
+    .catch(err => {
+      console.error('err -',err);
+      res.status(400).json({ err: `create vacancy error = [${err}] doesn\'t exist.`})}
+  )
 };
 
+exports.read_a_vacancy = function(req, res)  {
+  Models.Vacancy.findOne({ where: {id: req.params.id}, include: includeArray})
+    .then(vacancyWithAssociations => {
+      return res.json(vacancyWithAssociations)
+        // return res.json(includeArrayCandidate)
+    })
+    .catch(err => res.status(400).json({ err: `User with id = [${err}] doesn\'t exist.`}))
+};
 
-exports.read_a_candidate = function(req, res) {
-  Task.findById(req.params.id).populate('candidates').exec(function(err, task) {
-    if (err) {
+exports.read_candidates_from_vacancy = function(req, res)  {
+  Models.Vacancy.findOne({ where: {id: req.params.id}, include: includeArray})
+    .then(vacancyWithAssociations => {
+      return res.json(vacancyWithAssociations.candidates)
+    })
+    .catch(err => res.status(400).json({ err: `User with id = [${err}] doesn\'t exist.`}))
+};
 
+exports.update_candidates_from_vacancy = function(req, res)  {
+  const body = req.body
+  const candidatesPromise = body.map(skill => Models.Candidate.findOrCreate({ where: { name: skill.name, surname: skill.surname }, defaults: { name: skill.name, surname: skill.surname }})
+                                       .spread((skill, created) => skill));
+
+  Models.Vacancy.findOne({where:{id: req.params.id}, include: includeArrayCandidate})
+    .then(vacancy => Promise.all(candidatesPromise).then(storedSkills => vacancy.setCandidates(storedSkills)).then(() => vacancy))
+  .then(vacancy => Models.Vacancy.findOne({id: req.params.id}))
+  .then(vacancy => {
+    vacancy.save({include: includeArray}).then(savedVacancy => {
+      res.status(200).send({
+        message: 'OK'
+      })
+    });
+  })
+  .catch(err => {
+    console.log(err);
+    res.status(400).json({ err: `User with id = [${err}] doesn\'t exist.`})
+  })
+};
+
+exports.update_a_vacancy = function(req, res) {
+  const body = req.body
+const candidatesPromise = body.candidates.map(skill => CandidateWorker.find_or_create_a_candidate(skill)
+  .spread((skill, created) => skill));
+  const skills = body.skills.map(skill => Models.Skill.findOrCreate({ where: { name: skill.name }, defaults: { name: skill.name }})
+                                       .spread((skill, created) => skill));
+  const requirementsPromise = body.requirements.map(skill => Models.Requirement.findOrCreate({ where: { name: skill.name }, defaults: { name: skill.name }})
+                                       .spread((skill, created) => skill));
+  Models.Vacancy.findOne({id: req.params.id})
+  .then(vacancy => Promise.all(skills).then(storedExperiences => vacancy.setSkills(storedExperiences)).then(() => vacancy))
+    .then(vacancy => Promise.all(requirementsPromise).then(storedSkills => vacancy.setRequirements(storedSkills)).then(() => vacancy))
+    .then(vacancy => Promise.all(candidatesPromise).then(storedSkills => vacancy.setCandidates(storedSkills)).then(() => vacancy))
+  .then(vacancy => Models.Vacancy.findOne({id: req.params.id}))
+  .then(vacancy => {
+    for(let prop in  body) {
+      vacancy[prop] = body[prop];
     }
-      // res.send(err);
-    res.json(task);
-  });
-};
+    vacancy.save({include: includeArray}).then(savedVacancy => {
+      res.status(200).send({
+        message: 'ok'
+      })
+    });
+  })
+  .catch(err => {
+    console.log(err);
+    res.status(400).json({ err: `User with id = [${err}] doesn\'t exist.`})
+  })
+  // })
+}
 
-
-exports.update_a_candidate = function(req, res) {
-  Task.findOneAndUpdate({_id: req.params.id}, req.body, {new: true}, function(err, task) {
-    if (err)
-      res.send(err);
-    res.json(task);
-  });
-};
-
-
-exports.delete_a_candidate = function(req, res) {
-
-
-  Task.remove({
-    _id: req.params.id
-  }, function(err, task) {
-    if (err)
-      res.send(err);
-    res.json({ message: 'Task successfully deleted' });
-  });
-};
+exports.delete_a_vacancy = function(req, res)  {
+  Models.Vacancy.findOne({id: req.params.id}).then(vacancy => {
+    vacancy.destroy().then(result => {
+      res.status(200).send({
+        message: 'OK'
+      })
+    })
+    .catch(err => res.status(400).json({ err: `${err}`}))
+  })
+  .catch(err => res.status(400).json({ err: `${err}`}))
+}
