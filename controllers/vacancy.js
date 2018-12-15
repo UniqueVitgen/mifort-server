@@ -45,25 +45,18 @@ function createAssociationObject(body) {
 }
 
 function createAssociations(vacancy, promise) {
-new Promise((resolve, reject) => {
+ new Promise((resolve, reject) => {
   if (promise.skills) {
-  return Promise.all(promise.skills).then(storedExperiences => vacancy.setSkills(storedExperiences))
-  .then(() => vacancy)
+    console.log('vacancy', vacancy);
+    console.log('vacancy atta1', vacancy);
+    // resolve(vacancy);
+    Promise.all(promise.skills).then(storedExperiences => vacancy.setSkills(storedExperiences))
+    .then(() => resolve(vacancy))
   }
   else {
-  return vacancy;
+    resolve(vacancy);
   }
 })
-.then(vacancy => {
-if(promise.candidates) { return Promise.all(promise.candidates).then(storedSkills => {console.log(storedSkills); return vacancy.setCandidates(storedSkills)}).then(() => vacancy) }
-else { return vacancy;}
-})
-.then(vacancy => {
-if(promise.attachments) {return Promise.all(promise.requirements).then(storedSkills => vacancy.setRequirements(storedSkills)).then(() => vacancy)}
-else {
-return vacancy;
-}}
-)
 
 }
 
@@ -71,8 +64,26 @@ exports.create_a_vacancy = function(req, res)  {
   const body = req.body
   const promise = createAssociationObject(body);
   Models.Vacancy.create(body, {})
-    .then(vacancy => {return createAssociations(vacancy, promise)})
-    .then(vacancy => Models.Vacancy.findOne({ where: {id: vacancy.id}, include: includeArray}))
+    .then(vacancy => {
+      if(promise.skills) {
+        return Promise.all(promise.skills).then(storedExperiences => vacancy.setSkills(storedExperiences))
+          .then(() => vacancy)
+      }
+      else {return vacancy;}
+    })
+    .then(vacancy => {
+      console.log('vacancy atta2', vacancy);
+      if(promise.candidates) { return Promise.all(promise.candidates).then(storedSkills => {console.log(storedSkills); return vacancy.setCandidates(storedSkills)}).then(() => vacancy) }
+      else { return vacancy;}
+    })
+    .then(vacancy => {
+      console.log('vacancy atta3', vacancy);
+      if(promise.attachments) {return Promise.all(promise.requirements).then(storedSkills => vacancy.setRequirements(storedSkills)).then(() => vacancy)}
+      else {
+        return vacancy;
+      }
+    })
+    .then(vacancy => {console.log('');console.log('findOne');console.log(''); return Models.Vacancy.findOne({ where: {id: vacancy.id}, include: includeArray})})
     .then(vacancyWithAssociations => {
       return res.json(vacancyWithAssociations)
     })
@@ -101,11 +112,28 @@ exports.read_candidates_from_vacancy = function(req, res)  {
 
 exports.update_candidates_from_vacancy = function(req, res)  {
   const body = req.body
-  const candidatesPromise = body.map(skill => Models.Candidate.findOrCreate({ where: { name: skill.name, surname: skill.surname }, defaults: { name: skill.name, surname: skill.surname }})
-                                       .spread((skill, created) => skill));
+  const promise = createAssociationObject(body);
 
   Models.Vacancy.findOne({where:{id: req.params.id}, include: includeArrayCandidate})
-    .then(vacancy => Promise.all(candidatesPromise).then(storedSkills => vacancy.setCandidates(storedSkills)).then(() => vacancy))
+    .then(vacancy => {
+      if(promise.skills) {
+        return Promise.all(promise.skills).then(storedExperiences => vacancy.setSkills(storedExperiences))
+          .then(() => vacancy)
+      }
+      else {return vacancy;}
+    })
+    .then(vacancy => {
+      console.log('vacancy atta2', vacancy);
+      if(promise.candidates) { return Promise.all(promise.candidates).then(storedSkills => {console.log(storedSkills); return vacancy.setCandidates(storedSkills)}).then(() => vacancy) }
+      else { return vacancy;}
+    })
+    .then(vacancy => {
+      console.log('vacancy atta3', vacancy);
+      if(promise.attachments) {return Promise.all(promise.requirements).then(storedSkills => vacancy.setRequirements(storedSkills)).then(() => vacancy)}
+      else {
+        return vacancy;
+      }
+    })
   .then(vacancy => Models.Vacancy.findOne({id: req.params.id}))
   .then(vacancy => {
     vacancy.save({include: includeArray}).then(savedVacancy => {
@@ -122,16 +150,27 @@ exports.update_candidates_from_vacancy = function(req, res)  {
 
 exports.update_a_vacancy = function(req, res) {
   const body = req.body
-const candidatesPromise = body.candidates.map(skill => CandidateWorker.find_or_create_a_candidate(skill)
-  .spread((skill, created) => skill));
-  const skills = body.skills.map(skill => Models.Skill.findOrCreate({ where: { name: skill.name }, defaults: { name: skill.name }})
-                                       .spread((skill, created) => skill));
-  const requirementsPromise = body.requirements.map(skill => Models.Requirement.findOrCreate({ where: { name: skill.name }, defaults: { name: skill.name }})
-                                       .spread((skill, created) => skill));
+  const promise = createAssociationObject(body);
   Models.Vacancy.findOne({id: req.params.id})
-  .then(vacancy => Promise.all(skills).then(storedExperiences => vacancy.setSkills(storedExperiences)).then(() => vacancy))
-    .then(vacancy => Promise.all(requirementsPromise).then(storedSkills => vacancy.setRequirements(storedSkills)).then(() => vacancy))
-    .then(vacancy => Promise.all(candidatesPromise).then(storedSkills => vacancy.setCandidates(storedSkills)).then(() => vacancy))
+    .then(vacancy => {
+      if(promise.skills) {
+        return Promise.all(promise.skills).then(storedExperiences => vacancy.setSkills(storedExperiences))
+          .then(() => vacancy)
+      }
+      else {return vacancy;}
+    })
+    .then(vacancy => {
+      console.log('vacancy atta2', vacancy);
+      if(promise.candidates) { return Promise.all(promise.candidates).then(storedSkills => {console.log(storedSkills); return vacancy.setCandidates(storedSkills)}).then(() => vacancy) }
+      else { return vacancy;}
+    })
+    .then(vacancy => {
+      console.log('vacancy atta3', vacancy);
+      if(promise.attachments) {return Promise.all(promise.requirements).then(storedSkills => vacancy.setRequirements(storedSkills)).then(() => vacancy)}
+      else {
+        return vacancy;
+      }
+    })
   .then(vacancy => Models.Vacancy.findOne({id: req.params.id}))
   .then(vacancy => {
     for(let prop in  body) {

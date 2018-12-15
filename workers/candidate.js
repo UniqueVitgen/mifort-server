@@ -97,8 +97,32 @@ exports.create_a_candidate = function(body)  {
     return promise.candidateState.then(candidateState => {
       body.candidateStateId = candidateState.id;
       return Models.Candidate.create(body, {})
-      .then((candidate) => {
-        return createAssociations(candidate, promise)
+      .then(candidate => {
+          if (promise.experiences) {
+          return Promise.all(promise.experiences).then(storedExperiences => candidate.setExperiences(storedExperiences))
+          .then(() => candidate)
+          }
+          else {
+          return candidate;
+          }
+      })
+      .then(candidate => {
+      if(promise.contacts) { return Promise.all(promise.contacts).then(storedContacts => candidate.setContacts(storedContacts)).then(() => candidate) }
+      else { return candidate;}
+      })
+      .then(candidate => {
+      if(promise.attachments) {return Promise.all(promise.attachments).then(storedAttachments => candidate.setAttachments(storedAttachments)).then(() => candidate)}
+      else {
+      return candidate;
+      }}
+      )
+      .then(candidate => {
+      if(promise.responsibilities) {return Promise.all(promise.responsibilities).then(storedResponsibilities => candidate.setResponsibilities(storedResponsibilities)).then(() => candidate)}
+      else {return candidate;}
+      })
+      .then(candidate => {
+      if(promise.skills) {return Promise.all(promise.skills).then(storedSkills => candidate.setSkills(storedSkills)).then(() => candidate)}
+      else {return candidate;}
       })
       // .then(candidate => Promise.all(promise.experiences).then(storedExperiences => candidate.setExperiences(storedExperiences)).then(() => candidate))
       // .then(candidate => Promise.all(promise.contacts).then(storedContacts => candidate.setContacts(storedContacts)).then(() => candidate))
