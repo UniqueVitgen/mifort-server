@@ -40,8 +40,8 @@ exports.read_timeline = function(req, res)  {
     .then(candidateWithAssociations => {
       let timeline = [];
       timeline = timeline.concat(candidateWithAssociations.attachments);
-      if(candidateWithAssociations.contacts) {
-        timeline = timeline.concat(candidateWithAssociations.contacts)
+      if(candidateWithAssociations.experiences) {
+        timeline = timeline.concat(candidateWithAssociations.experiences.map(object => {object.type = 'contact'; return object;} ))
       }
       timeline = timeline.sort((a,b) => {
         return new Date(a.createdAt).getTime() < new Date(b.createdAt).getTime();
