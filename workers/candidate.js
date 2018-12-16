@@ -149,7 +149,7 @@ exports.find_or_create_a_candidate = function(body)  {
       .then(candidate => {
         return  Models.Candidate.findOne({id: candidate.id})
       .then(candidate => {
-        if (experiences) {
+        if (promise.experiences) {
         return Promise.all(promise.experiences).then(storedExperiences => candidate.setExperiences(storedExperiences))
         .then(() => candidate)
       }

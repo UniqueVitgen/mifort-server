@@ -8,6 +8,14 @@ module.exports = (sequelize, type) => {
         name: {
           type: type.STRING,
           allowNull: false
+        },
+        public: {
+          type: type.BOOLEAN,
+          defaultValue: false
+        },
+        required: {
+          type: type.BOOLEAN,
+          defaultValue: false
         }
     })
 }

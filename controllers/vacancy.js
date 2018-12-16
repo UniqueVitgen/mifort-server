@@ -78,7 +78,7 @@ exports.create_a_vacancy = function(req, res)  {
     })
     .then(vacancy => {
       console.log('vacancy atta3', vacancy);
-      if(promise.attachments) {return Promise.all(promise.requirements).then(storedSkills => vacancy.setRequirements(storedSkills)).then(() => vacancy)}
+      if(promise.requirements) {return Promise.all(promise.requirements).then(storedSkills => vacancy.setRequirements(storedSkills)).then(() => vacancy)}
       else {
         return vacancy;
       }
@@ -134,7 +134,7 @@ exports.update_candidates_from_vacancy = function(req, res)  {
         return vacancy;
       }
     })
-  .then(vacancy => Models.Vacancy.findOne({id: req.params.id}))
+  .then(vacancy => Models.Vacancy.findOne({where:{id: req.params.id}, include: includeArray}))
   .then(vacancy => {
     vacancy.save({include: includeArray}).then(savedVacancy => {
       res.status(200).send({
@@ -174,7 +174,7 @@ exports.update_a_vacancy = function(req, res) {
     })
     .then(vacancy => {
       console.log('vacancy atta3', vacancy);
-      if(promise.attachments) {return Promise.all(promise.requirements).then(storedSkills => vacancy.setRequirements(storedSkills)).then(() => vacancy)}
+      if(promise.requirements) {return Promise.all(promise.requirements).then(storedSkills => vacancy.setRequirements(storedSkills)).then(() => vacancy)}
       else {
         return vacancy;
       }
