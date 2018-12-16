@@ -41,11 +41,15 @@ exports.read_timeline = function(req, res)  {
       if(candidateWithAssociations.experiences) {
         timeline = timeline.concat(candidateWithAssociations.experiences.map(object => {object.type = 'contact'; return object;} ))
       }
-      timeline = timeline.sort((a,b) => {
-        return new Date(a.createdAt).getTime() < new Date(b.createdAt).getTime();
+      return Models.Feedback.findAll({where:{candidateId: req.params.id}})
+      .then((feedbacks) => {
+        timeline = timeline.concat(feedbacks);
+        timeline = timeline.sort((a,b) => {
+          return new Date(a.createdAt).getTime() < new Date(b.createdAt).getTime();
+        })
+        res.json(timeline);
       })
       // return res.json(candidateWithAssociations)
-      res.json(timeline);
     })
     .catch(err => res.status(400).json({ err: `User with id = [${err}] doesn\'t exist.`}))
 };

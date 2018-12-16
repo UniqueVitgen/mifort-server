@@ -11,6 +11,8 @@ const TeamModel = require('./models/team')
 const ExperienceModel = require('./models/candidate-experience.js')
 const AttachmentModel = require('./models/attachment.js')
 const InverviewModel = require('./models/inverview.js')
+const FeedbackModel = require('./models/feedback.js')
+const FeedbackStateModel = require('./models/feedback-state.js')
 
 const sequelize = new Sequelize('mifort_server', 'root', 'root', {
   host: 'localhost',
@@ -56,6 +58,8 @@ const Team = TeamModel(sequelize, Sequelize)
 const Project = ProjectModel(sequelize, Sequelize)
 const Attachment = AttachmentModel(sequelize, Sequelize)
 const Interview = InverviewModel(sequelize, Sequelize)
+const Feedback = FeedbackModel(sequelize, Sequelize)
+const FeedbackState = FeedbackStateModel(sequelize, Sequelize)
 
 Candidate.belongsToMany(Vacancy, { through: CandidateVacancy, unique: false, onDelete:'CASCADE', onUpdate: 'CASCADE', underscore: false }, {underscored: false})
 Vacancy.belongsToMany(Candidate, { through: CandidateVacancy, unique: false, onDelete:'CASCADE', onUpdate: 'CASCADE'})
@@ -88,6 +92,9 @@ Vacancy.belongsToMany(Interview, {through: InterviewVacancy, unique: false, onDe
 
 Candidate.belongsTo(CandidateState, {as: 'candidateState'})
 
+Feedback.belongsTo(Candidate)
+Feedback.belongsTo(FeedbackState);
+
 
 
 sequelize.sync({ force: true })
@@ -107,7 +114,9 @@ Models = {
   Team: Team,
   Project: Project,
   Attachment: Attachment,
-  Interview: Interview
+  Interview: Interview,
+  Feedback: Feedback,
+  FeedbackState: FeedbackState
 }
 
 module.exports = {
