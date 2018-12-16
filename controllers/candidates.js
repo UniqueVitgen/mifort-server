@@ -8,9 +8,7 @@ const {
   includeArrayVacancy
 } = require('./vacancy.js')
 
-const includeArray = [
-  Models.Skill, Models.Responsibility, Models.Attachment, Models.Experience, {model: Models.CandidateState, as: 'candidateState'}, Models.Contact
-]
+const includeArray = CandidateWorker.includeCandidateArray;
 
 exports.includeArrayCandidate = includeArray;
 

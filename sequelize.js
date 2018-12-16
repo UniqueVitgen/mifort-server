@@ -36,8 +36,8 @@ const CandidateAttachment = sequelize.define('candidate_attachment', {})
 const VacancySkill = sequelize.define('vacancy_skill', {})
 const VacancyRequirements = sequelize.define('vacancy_requirement', {})
 
-const ExperienceTeam = sequelize.define('experience_team', {})
-const ExperienceProject = sequelize.define('experience_project', {})
+// const ExperienceTeam = sequelize.define('experience_team', {})
+// const ExperienceProject = sequelize.define('experience_project', {})
 
 const ProjectTeam = sequelize.define('project_team', {})
 
@@ -77,10 +77,8 @@ Skill.belongsToMany(Vacancy, {through: VacancySkill, unique: false, onDelete: 'C
 Vacancy.belongsToMany(Requirement, {through: VacancyRequirements, unique: false, onDelete: 'CASCADE', onUpdate: 'CASCADE'})
 Requirement.belongsToMany(Vacancy, {through: VacancyRequirements, unique: false, onDelete: 'CASCADE', onUpdate: 'CASCADE'})
 
-Team.belongsToMany(Experience, {through: ExperienceTeam, unique: false, onDelete: 'CASCADE', onUpdate: 'CASCADE'})
-Experience.belongsToMany(Team, {through: ExperienceTeam, unique: false, onDelete: 'CASCADE', onUpdate: 'CASCADE'})
-Team.belongsToMany(Project, {through: ProjectTeam, unique: false, onDelete: 'CASCADE', onUpdate: 'CASCADE'})
-Project.belongsToMany(Team, {through: ProjectTeam, unique: false, onDelete: 'CASCADE', onUpdate: 'CASCADE'})
+Experience.belongsTo(Team, {as: 'companyName'})
+Experience.belongsTo(Project)
 
 // Interview.belongsTo(CandidateVacancy, {underscore: true})
 Interview.belongsToMany(Candidate, {through: InterviewCandidate, unique: false, onDelete: 'CASCADE', onUpdate: 'CASCADE'})

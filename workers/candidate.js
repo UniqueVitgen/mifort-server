@@ -5,8 +5,10 @@ const CandidateWorker = require('../workers/candidate')
 const ExperienceWorker = require('../workers/experience')
 
 const includeArray = [
-  Models.Skill, Models.Responsibility, Models.Attachment, {model:Models.Experience}, {model: Models.CandidateState, as: 'candidateState'}, Models.Contact
+  Models.Skill, Models.Responsibility, Models.Attachment, {model:Models.Experience, include: ExperienceWorker.includeExperienceArray}, {model: Models.CandidateState, as: 'candidateState'}, Models.Contact
 ]
+
+exports.includeCandidateArray = includeArray;
 
 
 function createAssociationObject(body) {
@@ -226,7 +228,7 @@ exports.update_a_candidate = function(id, body) {
   })
   .catch(err => {
     console.log(err);
-    res.status(400).json({ err: `User with id = [${err}] doesn\'t exist.`})
+    //res.status(400).json({ err: `User with id = [${err}] doesn\'t exist.`})
   })
   })
 }
