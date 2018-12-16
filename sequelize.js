@@ -10,7 +10,7 @@ const ProjectModel = require('./models/project')
 const TeamModel = require('./models/team')
 const ExperienceModel = require('./models/candidate-experience.js')
 const AttachmentModel = require('./models/attachment.js')
-const InverviewModel = require('./models/inverview.js')
+const InterviewModel = require('./models/interview.js')
 
 const sequelize = new Sequelize('mifort_server', 'root', 'root', {
   host: 'localhost',
@@ -55,7 +55,7 @@ const Experience = ExperienceModel(sequelize, Sequelize)
 const Team = TeamModel(sequelize, Sequelize)
 const Project = ProjectModel(sequelize, Sequelize)
 const Attachment = AttachmentModel(sequelize, Sequelize)
-const Interview = InverviewModel(sequelize, Sequelize)
+const Interview = InterviewModel(sequelize, Sequelize)
 
 Candidate.belongsToMany(Vacancy, { through: CandidateVacancy, unique: false, onDelete:'CASCADE', onUpdate: 'CASCADE', underscore: false }, {underscored: false})
 Vacancy.belongsToMany(Candidate, { through: CandidateVacancy, unique: false, onDelete:'CASCADE', onUpdate: 'CASCADE'})
@@ -81,10 +81,13 @@ Experience.belongsTo(Team, {as: 'companyName'})
 Experience.belongsTo(Project)
 
 // Interview.belongsTo(CandidateVacancy, {underscore: true})
-Interview.belongsToMany(Candidate, {through: InterviewCandidate, unique: false, onDelete: 'CASCADE', onUpdate: 'CASCADE'})
-Candidate.belongsToMany(Interview, {through: InterviewCandidate, unique: false, onDelete: 'CASCADE', onUpdate: 'CASCADE'})
-Interview.belongsToMany(Vacancy, {through: InterviewVacancy, unique: false, onDelete: 'CASCADE', onUpdate: 'CASCADE'})
-Vacancy.belongsToMany(Interview, {through: InterviewVacancy, unique: false, onDelete: 'CASCADE', onUpdate: 'CASCADE'})
+// Interview.belongsToMany(Candidate, {through: InterviewCandidate, unique: false, onDelete: 'CASCADE', onUpdate: 'CASCADE'})
+// Candidate.belongsToMany(Interview, {through: InterviewCandidate, unique: false, onDelete: 'CASCADE', onUpdate: 'CASCADE'})
+// Interview.belongsToMany(Vacancy, {through: InterviewVacancy, unique: false, onDelete: 'CASCADE', onUpdate: 'CASCADE'})
+// Vacancy.belongsToMany(Interview, {through: InterviewVacancy, unique: false, onDelete: 'CASCADE', onUpdate: 'CASCADE'})
+
+Interview.belongsTo(Candidate, {unique: false, onDelete: 'CASCADE', onUpdate: 'CASCADE'})
+Interview.belongsTo(Vacancy, {unique: false, onDelete: 'CASCADE', onUpdate: 'CASCADE'})
 
 Candidate.belongsTo(CandidateState, {as: 'candidateState'})
 
