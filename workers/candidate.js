@@ -216,15 +216,21 @@ exports.update_a_candidate = function(id, body) {
       if(promise.skills) {return Promise.all(promise.skills).then(storedSkills => candidate.setSkills(storedSkills)).then(() => candidate)}
   else {return candidate;}
 })
-  .then(candidate => Models.Candidate.findOne({id: id}))
-  .then(candidate => {
-    for(let prop in  body) {
-      candidate[prop] = body[prop];
-    }
+  .then(candidate => Models.Candidate.findOne({where: {id: id}}))
+  .then(candidate => { if (candidate.id == id) {
+      for(let prop in  body) {
+          candidate[prop] = body[prop];
+      }
       // res.status(200).send({
       //   message: 'ok'
       // })
-    return candidate.save({include: includeArray});
+      return candidate.save({include: includeArray});
+  }
+   else {
+       res.status(404).send({
+           message: 'Not found'
+       })
+  }
   })
   .catch(err => {
     console.log(err);
@@ -234,7 +240,7 @@ exports.update_a_candidate = function(id, body) {
 }
 
 exports.delete_a_candidate = function(id)  {
-  return Models.Candidate.findOne({id: id}).then(candidate => {
-    return candidate.destroy();
+  return Models.Candidate.findOne({where: {id: id}}).then(candidate => {
+      if (candidate.id == id) {return candidate.destroy();}
   })
 }

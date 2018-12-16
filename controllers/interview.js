@@ -47,26 +47,17 @@ exports.read_a_interview = function(req, res)  {
 
 exports.update_a_interview = function(req, res) {
   const body = req.body
-  // const candidatesPromise = body.candidates.map(skill => Models.Candidate.findOrCreate({ where: { name: skill.name, surname: skill.surname }, defaults: { name: skill.name, surname: skill.surname }})
-  //                                      .spread((skill, created) => skill));
-  // const skills = body.skills.map(skill => Models.Skill.findOrCreate({ where: { name: skill.name }, defaults: { name: skill.name }})
-  //                                      .spread((skill, created) => skill));
-  // const requirementsPromise = body.requirements.map(skill => Models.Requirement.findOrCreate({ where: { name: skill.name }, defaults: { name: skill.name }})
-  //                                      .spread((skill, created) => skill));
-  Models.Interview.findOne({id: req.params.id})
-  // .then(interview => Promise.all(skills).then(storedExperiences => interview.setSkills(storedExperiences)).then(() => interview))
-  //   .then(interview => Promise.all(requirementsPromise).then(storedSkills => interview.setRequirements(storedSkills)).then(() => interview))
-  //   .then(interview => Promise.all(candidatesPromise).then(storedSkills => interview.setCandidates(storedSkills)).then(() => interview))
-  .then(interview => Models.Interview.findOne({id: req.params.id}))
-  .then(interview => {
-    for(let prop in  body) {
-      interview[prop] = body[prop];
-    }
-    interview.save({include: includeArray}).then(savedInterview => {
-      res.status(200).send({
-        message: 'ok'
-      })
-    });
+   Models.Interview.findOne({where: {id: req.params.id}})
+  .then(interview => { if (interview.id == req.params.id) {
+      for(let prop in  body) {
+          interview[prop] = body[prop];
+      }
+      interview.save({include: includeArray}).then(savedInterview => {
+          res.status(200).send({
+              message: 'ok'
+          })
+      });
+  }
   })
   .catch(err => {
     console.log(err);
