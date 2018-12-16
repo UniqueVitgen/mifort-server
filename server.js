@@ -7,7 +7,8 @@ var cors = require('cors');
 const routesCandidate = require('./routes/candidates');
 const routesVacancy = require('./routes/vacancy');
 const routesTeam = require('./routes/team');
-const routesFeedback = require('./routes/feedback');
+const routesInterview = require('./routes/interview');
+const routesFeedback= require('./routes/feedback');
 const {
   Models
 } = require('./sequelize')
@@ -28,6 +29,7 @@ routesCandidate(app);
 routesVacancy(app);
 routesTeam(app);
 routesFeedback(app);
+routesInterview(app);
 // var routes = require('./routes/candidates'); //importing route
 // var routesVacancy = require('./routes/vacancy'); //importing route
 // routes(app); //register the route
