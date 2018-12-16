@@ -2,16 +2,17 @@ const {
   Models
 } = require('../sequelize')
 const CandidateWorker = require('../workers/candidate')
+const ExperienceWorker = require('../workers/experience')
 
 const includeArray = [
-  Models.Skill, Models.Responsibility, Models.Attachment, Models.Experience, {model: Models.CandidateState, as: 'candidateState'}, Models.Contact
+  Models.Skill, Models.Responsibility, Models.Attachment, {model:Models.Experience}, {model: Models.CandidateState, as: 'candidateState'}, Models.Contact
 ]
 
 
 function createAssociationObject(body) {
   let experiences;
   if(body.experiences) {
-    experiences = body.experiences.map(skill => Models.Experience.findOrCreate({ where: { jobPosition: skill.jobPosition, dateFrom: skill.dateFrom, dateTo: skill.dateTo }, defaults: { jobPosition: skill.jobPosition }})
+    experiences = body.experiences.map(skill => ExperienceWorker.find_or_create_a_experience(skill)
                                        .spread((skill, created) => skill));
   }
   let contacts;
