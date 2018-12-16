@@ -190,13 +190,24 @@ exports.update_a_vacancy = function(req, res) {
 }
 
 exports.delete_a_vacancy = function(req, res)  {
-  Models.Vacancy.findOne({id: req.params.id}).then(vacancy => {
+  Models.Vacancy.findOne({where: {id: req.params.id}}).then(vacancy => { if (vacancy.id == req.params.id) {
     vacancy.destroy().then(result => {
       res.status(200).send({
-        message: 'OK'
+        message: 'OK',
+          id : vacancy.id,
+          req: req.params.id
       })
     })
     .catch(err => res.status(400).json({ err: `${err}`}))
+  }
+  else {
+      res.status(200).send({
+          message: 'not found',
+          id : vacancy.id,
+          req: req.params.id
+      })
+  }
   })
   .catch(err => res.status(400).json({ err: `${err}`}))
+
 }
