@@ -151,7 +151,15 @@ exports.update_candidates_from_vacancy = function(req, res)  {
 exports.update_a_vacancy = function(req, res) {
   const body = req.body
   const promise = createAssociationObject(body);
-  Models.Vacancy.findOne({id: req.params.id})
+  Models.Vacancy.findOne({where: {id: req.params.id}})
+      .then(vacancy => { if (vacancy.id == req.params.id) {
+          return vacancy;
+      }
+      else
+          res.status(404).send({
+              message: 'Not found'
+          })
+      })
     .then(vacancy => {
       if(promise.skills) {
         return Promise.all(promise.skills).then(storedExperiences => vacancy.setSkills(storedExperiences))
@@ -171,16 +179,18 @@ exports.update_a_vacancy = function(req, res) {
         return vacancy;
       }
     })
-  .then(vacancy => Models.Vacancy.findOne({id: req.params.id}))
-  .then(vacancy => {
-    for(let prop in  body) {
-      vacancy[prop] = body[prop];
-    }
-    vacancy.save({include: includeArray}).then(savedVacancy => {
-      res.status(200).send({
-        message: 'ok'
-      })
-    });
+  .then(vacancy => Models.Vacancy.findOne({where: {id: req.params.id}}))
+  .then(vacancy => { if (vacancy.id == req.params.id) {
+      for(let prop in  body) {
+          vacancy[prop] = body[prop];
+      }
+      vacancy.save({include: includeArray}).then(savedVacancy => {
+          res.status(200).send({
+              message: 'ok'
+          })
+      });
+  }
+
   })
   .catch(err => {
     console.log(err);
