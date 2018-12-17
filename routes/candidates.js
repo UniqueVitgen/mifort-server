@@ -2,6 +2,7 @@
 const {
   Models
 } = require('../sequelize')
+const upload = require('../config/upload.js');
 
 const includeArray = [
   Models.Skill, Models.Responsibility, Models.Attachment, Models.Experience, {model: Models.CandidateState, as: 'candidateState'}
@@ -23,6 +24,9 @@ module.exports = function(app) {
 
 app.route('/candidate/:id/timeline')
     .get(todoList.read_timeline)
+
+app.route('/candidate/:id/uploadAttachment')
+    .post(upload.single("file"), todoList.upload_an_attachment)
   // app.route('/vacancy/:id/candidates')
   //   .get(todoList.get_candidates)
 };

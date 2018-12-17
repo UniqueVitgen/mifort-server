@@ -244,3 +244,22 @@ exports.delete_a_candidate = function(id)  {
       if (candidate.id == id) {return candidate.destroy();}
   })
 }
+
+exports.upload_an_attachment = function(id, body, file) {
+  return Models.Attachment.create({
+    filePath: file.path,
+    attachmentType: body.attachmentType
+  })
+  .catch(err => {
+    console.error(err);
+  })
+  // CandidateWorker.update_a_candidate(req.params.id, req.body).then(savedCandidate => {
+  //     res.status(200).send({
+  //       message: 'ok'
+  //     })
+  //   })
+  // .catch(err => {
+  //   console.log(err);
+  //   res.status(400).json({ err: `User with id = [${err}] doesn\'t exist.`})
+  // })
+}

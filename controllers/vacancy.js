@@ -34,7 +34,7 @@ function createAssociationObject(body) {
             }
             let requirementsPromise;
             if(body.requirements) {
-             requirementsPromise = body.requirements.map(skill => Models.Requirement.findOrCreate({ where: { name: skill.name }, defaults: { name: skill.name }})
+             requirementsPromise = body.requirements.map(skill => Models.Requirement.findOrCreate({ where: { name: skill.name, public: skill.public, required: skill.required }, defaults: { name: skill.name }})
                                      .spread((skill, created) => skill));
             }
              return  {

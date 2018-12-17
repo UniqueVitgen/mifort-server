@@ -13,6 +13,8 @@ const {
   Models
 } = require('./sequelize')
 
+global.__basedir = __dirname;
+
 // Candidate = require('./models/candidates');
 // Vacancy = require('./models/vacancy');
 

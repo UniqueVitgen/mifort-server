@@ -87,3 +87,10 @@ exports.delete_a_candidate = function(req, res)  {
   })
   .catch(err => res.status(400).json({ err: `${err}`}))
 }
+
+exports.upload_an_attachment = function(req, res) {
+  console.log('req', req.file);
+  CandidateWorker.upload_an_attachment(req.params.id, req.body, req.file).then(attachment => {
+    res.json(attachment);
+  })
+}
