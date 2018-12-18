@@ -57,7 +57,8 @@ function createAssociationObject(body) {
 }
 
 function createAssociations(candidate, promise) {
-new Promise((resolve, reject) => {
+  return new Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
   if (promise.experiences) {
   return Promise.all(promise.experiences).then(storedExperiences => candidate.setExperiences(storedExperiences))
   .then(() => candidate)
@@ -81,8 +82,9 @@ if(promise.responsibilities) {return Promise.all(promise.responsibilities).then(
 else {return candidate;}
 })
 .then(candidate => {
-if(promise.skills) {return Promise.all(promise.skills).then(storedSkills => candidate.setSkills(storedSkills)).then(() => candidate)}
-else {return candidate;}
+if(promise.skills) {return Promise.all(promise.skills).then(storedSkills => candidate.setSkills(storedSkills)).then(() => resolve(candidate))}
+else {resolve(candidate);}
+})
 })
 
 }

@@ -4,6 +4,7 @@ const {
 
 
 const CandidateWorker = require('../workers/candidate');
+const AttachmentWorker = require('../workers/attachment');
 const {
   includeArrayVacancy
 } = require('./vacancy.js')
@@ -90,7 +91,8 @@ exports.delete_a_candidate = function(req, res)  {
 
 exports.upload_an_attachment = function(req, res) {
   console.log('req', req.file);
-  CandidateWorker.upload_an_attachment(req.params.id, req.body, req.file).then(attachment => {
+    console.log('req', req.body);
+  AttachmentWorker.upload_an_attachment(req.params.id, req.file, req.body.attachmentType).then(attachment => {
     res.json(attachment);
   })
 }
