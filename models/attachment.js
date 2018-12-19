@@ -13,7 +13,11 @@ module.exports = (sequelize, type) => {
         filePath: {
           type: type.STRING,
           allowNull: false
-        }
+        },
+	      data: {
+  		       type: type.BLOB('long')
+	      }
+
 
     })
 }

@@ -4,3 +4,6 @@ npm-debug.log
 /.env
 
 *.png
+*.jpg
+*.docx
+*.mp4

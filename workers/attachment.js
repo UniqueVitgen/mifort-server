@@ -2,10 +2,13 @@ const {
   Models
 } = require('../sequelize')
 const CandidateWorker = require('../workers/candidate');
+var stream = require('stream');
+const fs = require('fs');
 
 const includeArray = [
   Models.Candidate
 ]
+
 
 
 function createAssociationObject(body) {
@@ -28,14 +31,15 @@ function createAssociations(attachment, promise) {
 
 exports.upload_an_attachment = function(id, file, attachmentType) {
   return Models.Candidate.findOne({where: {id: id}, include: CandidateWorker.includeCandidateArray}).then(candidate => {
-    console.log('candidate', attachmentType);
+    console.log('file', file);
     body = {
       candidates: [candidate.dataValues]
     }
     const promise = createAssociationObject(body)
       return Models.Attachment.create({
           filePath: file.path,
-          attachmentType: attachmentType
+          attachmentType: attachmentType,
+		      data: fs.readFileSync(file.path)
         })
         .then(attachment => {
           return createAssociations(attachment, promise).then((attachment => {
@@ -50,4 +54,19 @@ exports.upload_an_attachment = function(id, file, attachmentType) {
       .catch(err => {
         console.error(err);
       });
+}
+
+
+exports.downloadFile = (id, res) => {
+	Models.Attachment.findOne({where: {id: id}}).then(file => {
+    console.log('file', file);
+		var fileContents = Buffer.from(file.data, "base64");
+		var readStream = new stream.PassThrough();
+		readStream.end(fileContents);
+
+		res.set('Content-disposition', 'attachment; filename=' + file.name);
+		res.set('Content-Type', file.type);
+
+		readStream.pipe(res);
+	})
 }

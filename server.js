@@ -9,6 +9,7 @@ const routesVacancy = require('./routes/vacancy');
 const routesTeam = require('./routes/team');
 const routesInterview = require('./routes/interview');
 const routesFeedback= require('./routes/feedback');
+const routesAttachment= require('./routes/attachment');
 const {
   Models
 } = require('./sequelize')
@@ -37,6 +38,7 @@ routesVacancy(app);
 routesTeam(app);
 routesFeedback(app);
 routesInterview(app);
+routesAttachment(app);
 // var routes = require('./routes/candidates'); //importing route
 // var routesVacancy = require('./routes/vacancy'); //importing route
 // routes(app); //register the route
