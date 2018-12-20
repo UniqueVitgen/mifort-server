@@ -10,6 +10,7 @@ const {
 } = require('./vacancy.js')
 
 const includeArray = CandidateWorker.includeCandidateArray;
+const includeArrayWithFiles = CandidateWorker.includeCandidateArrayWithFiles;
 
 exports.includeArrayCandidate = includeArray;
 
@@ -35,7 +36,7 @@ exports.read_a_candidate = function(req, res)  {
     .catch(err => res.status(400).json({ err: `User with id = [${err}] doesn\'t exist.`}))
 };
 exports.read_timeline = function(req, res)  {
-  Models.Candidate.findOne({ where: {id: req.params.id}, include: includeArray})
+  Models.Candidate.findOne({ where: {id: req.params.id}, include: includeArrayWithFiles})
     .then(candidateWithAssociations => {
       let timeline = [];
       timeline = timeline.concat(candidateWithAssociations.attachments);
@@ -90,8 +91,7 @@ exports.delete_a_candidate = function(req, res)  {
 }
 
 exports.upload_an_attachment = function(req, res) {
-  console.log('req', req.file);
-    console.log('req', req.body);
+  
   AttachmentWorker.upload_an_attachment(req.params.id, req.file, req.body.attachmentType).then(attachment => {
     res.json(attachment);
   })

@@ -22,7 +22,9 @@ const sequelize = new Sequelize('mifort_server', 'root', 'root', {
     min: 0,
     acquire: 30000,
     idle: 10000
-  }
+  },
+  // disable logging; default: console.log
+  logging: false
 })
 
 // const User = UserModel(sequelize, Sequelize)

@@ -25,19 +25,18 @@ function createAssociationObject(body) {
 }
 
 exports.find_or_create_a_experience = function(body)  {
-  console.log(body);
+  // console.log(body);
     const promise = createAssociationObject(body);
     if(promise.companyName) {
     return promise.companyName.then(team => {
       body.companyNameId = team.id;
-        console.log('candidate team', team);
+        // console.log('candidate team', team);
       return Models.Experience.findOrCreate({where: {jobPosition : body.jobPosition, dateFrom : body.dateFrom,
         dateTo: body.dateTo, companyNameId: body.companyNameId
       }, include: includeArray})
       .then(candidate => {
-        console.log('candidate findOne', candidate);
         return  Models.Experience.findOne({id: candidate.id})
-      .then(candidate =>{ console.log('candidate find or created');return Models.Experience.findOrCreate({where: {jobPosition : body.jobPosition, dateFrom : body.dateFrom,
+      .then(candidate =>{ return Models.Experience.findOrCreate({where: {jobPosition : body.jobPosition, dateFrom : body.dateFrom,
         dateTo: body.dateTo, companyNameId: body.companyNameId
       }, include: includeArray}
     )})

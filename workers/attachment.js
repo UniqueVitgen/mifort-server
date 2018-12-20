@@ -14,6 +14,7 @@ const includeArray = [
 function createAssociationObject(body) {
   let candidatesPromise;
   if(body.candidates) {
+    console.log('candiates', body.candidates);
     candidatesPromise = body.candidates.map(skill => CandidateWorker.find_or_create_a_candidate(skill)
                          .spread((skill, created) => skill));
                        }
@@ -31,13 +32,17 @@ function createAssociations(attachment, promise) {
 
 exports.upload_an_attachment = function(id, file, attachmentType) {
   return Models.Candidate.findOne({where: {id: id}, include: CandidateWorker.includeCandidateArray}).then(candidate => {
-    console.log('file', file);
+    console.log('id', id);
+      console.log('candidate.id', candidate.id);
+    if(id == candidate.id) {
     body = {
       candidates: [candidate.dataValues]
     }
     const promise = createAssociationObject(body)
       return Models.Attachment.create({
           filePath: file.path,
+		      type: file.mimetype,
+		      name: file.originalname,
           attachmentType: attachmentType,
 		      data: fs.readFileSync(file.path)
         })
@@ -45,11 +50,16 @@ exports.upload_an_attachment = function(id, file, attachmentType) {
           return createAssociations(attachment, promise).then((attachment => {
             // console.log(attachment);
             return attachment;
-          }));
+          }))
+          .catch(err => console.error(err));
         })
         .catch(err => {
           console.error(err);
         })
+    }
+    else {
+      console.error('not match', id, candidate.id);;
+    }
       })
       .catch(err => {
         console.error(err);

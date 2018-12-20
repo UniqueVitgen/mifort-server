@@ -5,11 +5,15 @@ const CandidateWorker = require('../workers/candidate')
 const ExperienceWorker = require('../workers/experience')
 
 const includeArray = [
-  Models.Skill, Models.Responsibility, Models.Attachment, {model:Models.Experience, include: ExperienceWorker.includeExperienceArray}, {model: Models.CandidateState, as: 'candidateState'}, Models.Contact
+  Models.Skill, Models.Responsibility, {model: Models.Attachment, attributes: ['id', 'filePath', 'attachmentType']}, {model:Models.Experience, include: ExperienceWorker.includeExperienceArray}, {model: Models.CandidateState, as: 'candidateState'}, Models.Contact
+]
+
+const includeArrayWithFiles  = [
+  Models.Skill, Models.Responsibility, {model: Models.Attachment}, {model:Models.Experience, include: ExperienceWorker.includeExperienceArray}, {model: Models.CandidateState, as: 'candidateState'}, Models.Contact
 ]
 
 exports.includeCandidateArray = includeArray;
-
+exports.includeCandidateArrayWithFiles = includeArrayWithFiles;
 
 function createAssociationObject(body) {
   let experiences;
@@ -59,12 +63,12 @@ function createAssociationObject(body) {
 function createAssociations(candidate, promise) {
   return new Promise((resolve, reject) => {
     return new Promise((resolve, reject) => {
-  if (promise.experiences) {
-  return Promise.all(promise.experiences).then(storedExperiences => candidate.setExperiences(storedExperiences))
-  .then(() => candidate)
-  }
-  else {
-  return candidate;
+      if (promise.experiences) {
+        return Promise.all(promise.experiences).then(storedExperiences => candidate.setExperiences(storedExperiences))
+        .then(() => resolve(candidate))
+      }
+      else {
+        resolve(candidate);
   }
 })
 .then(candidate => {
@@ -85,6 +89,9 @@ else {return candidate;}
 if(promise.skills) {return Promise.all(promise.skills).then(storedSkills => candidate.setSkills(storedSkills)).then(() => resolve(candidate))}
 else {resolve(candidate);}
 })
+.catch(err => {
+  console.error(err);
+})
 })
 
 }
@@ -103,39 +110,12 @@ exports.create_a_candidate = function(body)  {
       body.candidateStateId = candidateState.id;
       return Models.Candidate.create(body, {})
       .then(candidate => {
-          if (promise.experiences) {
-          return Promise.all(promise.experiences).then(storedExperiences => candidate.setExperiences(storedExperiences))
-          .then(() => candidate)
-          }
-          else {
-          return candidate;
-          }
-      })
-      .then(candidate => {
-      if(promise.contacts) { return Promise.all(promise.contacts).then(storedContacts => candidate.setContacts(storedContacts)).then(() => candidate) }
-      else { return candidate;}
-      })
-      .then(candidate => {
-      if(promise.attachments) {return Promise.all(promise.attachments).then(storedAttachments => candidate.setAttachments(storedAttachments)).then(() => candidate)}
-      else {
-      return candidate;
-      }}
-      )
-      .then(candidate => {
-      if(promise.responsibilities) {return Promise.all(promise.responsibilities).then(storedResponsibilities => candidate.setResponsibilities(storedResponsibilities)).then(() => candidate)}
-      else {return candidate;}
-      })
-      .then(candidate => {
-      if(promise.skills) {return Promise.all(promise.skills).then(storedSkills => candidate.setSkills(storedSkills)).then(() => candidate)}
-      else {return candidate;}
-      })
-      // .then(candidate => Promise.all(promise.experiences).then(storedExperiences => candidate.setExperiences(storedExperiences)).then(() => candidate))
-      // .then(candidate => Promise.all(promise.contacts).then(storedContacts => candidate.setContacts(storedContacts)).then(() => candidate))
-      // .then(candidate => Promise.all(promise.attachments).then(storedAttachments => candidate.setAttachments(storedAttachments)).then(() => candidate))
-      // .then(candidate => Promise.all(promise.responsibilities).then(storedResponsibilities => candidate.setResponsibilities(storedResponsibilities)).then(() => candidate))
-      // .then(candidate => Promise.all(promise.skills).then(storedSkills => candidate.setSkills(storedSkills)).then(() => candidate))
-      .then(candidate => Models.Candidate.findOne({ where: {id: candidate.id}, include: includeArray}))
-      .catch((err) => {
+        console.log('candidate 1', candidate);
+        return createAssociations(candidate, promise).then(candidate => Models.Candidate.findOne({ where: {id: candidate.id}, include: includeArray}))
+        .catch((err) => {
+          console.error(err);
+        })
+      }).catch((err) => {
         console.error(err);
       })
   });
@@ -143,6 +123,7 @@ exports.create_a_candidate = function(body)  {
 
 exports.find_or_create_a_candidate = function(body)  {
     const promise = createAssociationObject(body);
+    if(body.id == null) {
     return promise.candidateState.then(candidateState => {
       body.candidateStateId = candidateState.id;
       return Models.Candidate.findOrCreate({where: {name : body.name, surname : body.surname,
@@ -150,38 +131,20 @@ exports.find_or_create_a_candidate = function(body)  {
       }, include: includeArray})
       .then(candidate => {
         return  Models.Candidate.findOne({id: candidate.id})
-      .then(candidate => {
-        if (promise.experiences) {
-        return Promise.all(promise.experiences).then(storedExperiences => candidate.setExperiences(storedExperiences))
-        .then(() => candidate)
-      }
-    else {
-      return candidate;
-    }})
-      .then(candidate => {
-        if(promise.contacts) { return Promise.all(promise.contacts).then(storedContacts => candidate.setContacts(storedContacts)).then(() => candidate) }
-      else { return candidate;}
       })
       .then(candidate => {
-        if(promise.attachments) {return Promise.all(promise.attachments).then(storedAttachments => candidate.setAttachments(storedAttachments)).then(() => candidate)}
-    else {
-      return candidate;
-    }}
-    )
-      .then(candidate => {
-        if(promise.esponsibilities) {return Promise.all(promise.responsibilities).then(storedResponsibilities => candidate.setResponsibilities(storedResponsibilities)).then(() => candidate)}
-    else {return candidate;}
-  })
-      .then(candidate => {
-        if(promise.skills) {return Promise.all(promise.skills).then(storedSkills => candidate.setSkills(storedSkills)).then(() => candidate)}
-    else {return candidate;}
-  })
-      .then(candidate => Models.Candidate.findOrCreate({where: {name : body.name, surname : body.surname,
-        birthday: body.birthday, salaryInDollars: body.salaryInDollars, candidateStateId: body.candidateStateId
-      }, include: includeArray}))
-      .catch(err => {console.error(err);})
+        if(candidate.id)
+        return createAssociations(candidate, promise)
+        .then(candidate => Models.Candidate.findOrCreate({where: {name : body.name, surname : body.surname,
+          birthday: body.birthday, salaryInDollars: body.salaryInDollars, candidateStateId: body.candidateStateId
+        }, include: includeArray}))
+        .catch(err => {console.error(err);})
+        })
       })
-  });
+    }
+    else {
+      return Models.Candidate.findOrCreate({where: {id: body.id}, include: includeArray})
+    }
 };
 
 
@@ -190,54 +153,34 @@ exports.update_a_candidate = function(id, body) {
 
   return promise.candidateState.then(candidateState => {
       body.candidateStateId = candidateState.id;
-  return Models.Candidate.findOne({id: id})
+  return Models.Candidate.findOne({where:{id: id}})
   .then(candidate => {
-      if (promise.experiences) {
-      return Promise.all(promise.experiences).then(storedExperiences => candidate.setExperiences(storedExperiences))
-      .then(() => candidate)
-      }
-      else {
-      return candidate;
-      }
-  })
-    .then(candidate => {
-      if(promise.contacts) { return Promise.all(promise.contacts).then(storedContacts => candidate.setContacts(storedContacts)).then(() => candidate) }
-    else { return candidate;}
+    console.log('candidate.id', candidate.id);
+      console.log('id', id);
+    if(candidate.id == id) {
+    return createAssociations(candidate, promise)
+    .then(candidate => Models.Candidate.findOne({where: {id: id}}))
+    .then(candidate => { if (candidate.id == id) {
+        for(let prop in  body) {
+            candidate[prop] = body[prop];
+        }
+        // res.status(200).send({
+        //   message: 'ok'
+        // })
+        return candidate.save({include: includeArray});
+    }
+     else {
+         res.status(404).send({
+             message: 'Not found'
+         })
+    }
     })
-    .then(candidate => {
-      if(promise.attachments) {return Promise.all(promise.attachments).then(storedAttachments => candidate.setAttachments(storedAttachments)).then(() => candidate)}
-  else {
-    return candidate;
-  }}
-  )
-    .then(candidate => {
-      if(promise.responsibilities) {return Promise.all(promise.responsibilities).then(storedResponsibilities => candidate.setResponsibilities(storedResponsibilities)).then(() => candidate)}
-  else {return candidate;}
-})
-    .then(candidate => {
-      if(promise.skills) {return Promise.all(promise.skills).then(storedSkills => candidate.setSkills(storedSkills)).then(() => candidate)}
-  else {return candidate;}
-})
-  .then(candidate => Models.Candidate.findOne({where: {id: id}}))
-  .then(candidate => { if (candidate.id == id) {
-      for(let prop in  body) {
-          candidate[prop] = body[prop];
-      }
-      // res.status(200).send({
-      //   message: 'ok'
-      // })
-      return candidate.save({include: includeArray});
-  }
-   else {
-       res.status(404).send({
-           message: 'Not found'
-       })
-  }
-  })
-  .catch(err => {
-    console.log(err);
-    //res.status(400).json({ err: `User with id = [${err}] doesn\'t exist.`})
-  })
+    .catch(err => {
+      console.log(err);
+      //res.status(400).json({ err: `User with id = [${err}] doesn\'t exist.`})
+    })
+    }
+    })
   })
 }
 
@@ -245,23 +188,4 @@ exports.delete_a_candidate = function(id)  {
   return Models.Candidate.findOne({where: {id: id}}).then(candidate => {
       if (candidate.id == id) {return candidate.destroy();}
   })
-}
-
-exports.upload_an_attachment = function(id, body, file) {
-  return Models.Attachment.create({
-    filePath: file.path,
-    attachmentType: body.attachmentType
-  })
-  .catch(err => {
-    console.error(err);
-  })
-  // CandidateWorker.update_a_candidate(req.params.id, req.body).then(savedCandidate => {
-  //     res.status(200).send({
-  //       message: 'ok'
-  //     })
-  //   })
-  // .catch(err => {
-  //   console.log(err);
-  //   res.status(400).json({ err: `User with id = [${err}] doesn\'t exist.`})
-  // })
 }

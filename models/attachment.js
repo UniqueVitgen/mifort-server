@@ -14,6 +14,12 @@ module.exports = (sequelize, type) => {
           type: type.STRING,
           allowNull: false
         },
+	       type: {
+		         type: type.STRING
+	          },
+	       name: {
+		          type:type.STRING
+	       },
 	      data: {
   		       type: type.BLOB('long')
 	      }
