@@ -35,6 +35,15 @@ exports.read_a_candidate = function(req, res)  {
     })
     .catch(err => res.status(400).json({ err: `User with id = [${err}] doesn\'t exist.`}))
 };
+
+exports.read_vacancies = function(req, res)  {
+  CandidateWorker.read_vacancies(req.params.id)
+    .then(candidateWithAssociations => {
+      return res.json(candidateWithAssociations)
+    })
+    .catch(err => res.status(400).json({ err: `User with id = [${err}] doesn\'t exist.`}))
+}
+
 exports.read_timeline = function(req, res)  {
   Models.Candidate.findOne({ where: {id: req.params.id}, include: includeArrayWithFiles})
     .then(candidateWithAssociations => {
@@ -91,7 +100,7 @@ exports.delete_a_candidate = function(req, res)  {
 }
 
 exports.upload_an_attachment = function(req, res) {
-  
+
   AttachmentWorker.upload_an_attachment(req.params.id, req.file, req.body.attachmentType).then(attachment => {
     res.json(attachment);
   })

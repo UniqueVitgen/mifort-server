@@ -3,6 +3,7 @@ const {
 } = require('../sequelize')
 const CandidateWorker = require('../workers/candidate')
 const ExperienceWorker = require('../workers/experience')
+const VacancyController = require('../controllers/vacancy')
 
 const includeArray = [
   Models.Skill, Models.Responsibility, {model: Models.Attachment, attributes: ['id', 'filePath', 'attachmentType']}, {model:Models.Experience, include: ExperienceWorker.includeExperienceArray}, {model: Models.CandidateState, as: 'candidateState'}, Models.Contact
@@ -10,6 +11,10 @@ const includeArray = [
 
 const includeArrayWithFiles  = [
   Models.Skill, Models.Responsibility, {model: Models.Attachment}, {model:Models.Experience, include: ExperienceWorker.includeExperienceArray}, {model: Models.CandidateState, as: 'candidateState'}, Models.Contact
+]
+
+const includeArrayVacancy = [
+  {model: Models.Vacancy, incude: VacancyController.includeArrayVacancy}
 ]
 
 exports.includeCandidateArray = includeArray;
@@ -102,6 +107,12 @@ exports.list_all_candidates = function () {
 
 exports.read_a_candidate = function(id)  {
   return Models.Candidate.findOne({ where: {id: id}, include: includeArray})
+};
+
+exports.read_vacancies = function(id)  {
+  return Models.Candidate.findOne({ where: {id: id}, include: includeArrayVacancy}).then(candidate => {
+    return candidate.vacancies;
+  })
 };
 
 exports.create_a_candidate = function(body)  {

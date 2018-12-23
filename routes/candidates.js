@@ -25,6 +25,9 @@ module.exports = function(app) {
 app.route('/candidate/:id/timeline')
     .get(todoList.read_timeline)
 
+app.route('/candidate/:id/vacancies')
+    .get(todoList.read_vacancies)
+
 app.route('/candidate/:id/uploadAttachment')
     .post(upload.single("file"), todoList.upload_an_attachment)
   // app.route('/vacancy/:id/candidates')
