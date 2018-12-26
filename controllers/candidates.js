@@ -56,9 +56,6 @@ exports.read_timeline = function(req, res)  {
       return Models.Feedback.findAll({where:{candidateId: req.params.id}})
       .then((feedbacks) => {
         timeline = timeline.concat(feedbacks);
-        timeline = timeline.sort((a,b) => {
-          return new Date(a.createdAt).getTime() < new Date(b.createdAt).getTime();
-        })
         // return res.json(candidateWithAssociations)
 
         return Models.Interview.findAll( {where: {candidateId: req.params.id}})
@@ -69,6 +66,7 @@ exports.read_timeline = function(req, res)  {
                 timeline = timeline.sort((a,b) => {
                     return new Date(a.createdAt).getTime() < new Date(b.createdAt).getTime();
                 })
+                console.log('timeine', timeline);
                 // return res.json(candidateWithAssociations)
                 res.json(timeline);
         })
