@@ -9,7 +9,7 @@ const includeArray = [
   Models.Skill,
   Models.Requirement,
   {model:Models.Candidate,
-    include: [Models.Skill, Models.Responsibility, Models.Attachment, Models.Experience, {model: Models.CandidateState, as: 'candidateState'}, Models.Contact]}
+    include: [Models.Skill, Models.Responsibility, {model: Models.Attachment, attributes: ['id', 'filePath', 'attachmentType']}, Models.Experience, {model: Models.CandidateState, as: 'candidateState'}, Models.Contact]}
 ]
 
 exports.includeArrayVacancy = includeArray;
