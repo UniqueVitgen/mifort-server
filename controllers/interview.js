@@ -3,10 +3,11 @@ const {
 } = require('../sequelize')
 
 const CandidateWorker = require('../workers/candidate')
+const VacancyController = require('../controllers/vacancy')
 
 const includeArray = [
-    {model: Models.Candidate, include: {model: Models.CandidateState, as: 'candidateState'}},
-    Models.Vacancy
+    {model: Models.Candidate, include: CandidateWorker.includeCandidateArray},
+    {model: Models.Vacancy, include: VacancyController.includeArrayVacancy}
 ]
 
 
