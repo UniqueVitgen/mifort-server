@@ -7,6 +7,8 @@ const includeArray = [{model:Models.FeedbackState},
   {model:Models.FeedbackDetails, include: FeedbackDetailsWorker.includeFeedbackDetailsArray},
   ]
 
+exports.includeDevFeedbackArray = includeArray;
+
 function createAssociationObject(body) {
   let feedbackDetails;
   let feedbackStatePromise;

@@ -5,6 +5,7 @@ const {
 
 const CandidateWorker = require('../workers/candidate');
 const AttachmentWorker = require('../workers/attachment');
+const DevFeedbackWorker = require('../workers/dev_feedback');
 const {
   includeArrayVacancy
 } = require('./vacancy.js')
@@ -63,12 +64,18 @@ exports.read_timeline = function(req, res)  {
                 if (interviews) {
                     timeline = timeline.concat(interviews);
                 }
-                timeline = timeline.sort((a,b) => {
-                    return new Date(a.createdAt).getTime() < new Date(b.createdAt).getTime();
+                return Models.DevFeedback.findAll({where: {candidateId: req.params.id}, include: DevFeedbackWorker.includeDevFeedbackArray})
+                .then(devFeedbacks => {
+                  if(devFeedbacks) {
+                      timeline = timeline.concat(devFeedbacks);
+                  }
+                  timeline = timeline.sort((a,b) => {
+                      return new Date(a.createdAt).getTime() < new Date(b.createdAt).getTime();
+                    })
+                    console.log('timeine', timeline);
+                    // return res.json(candidateWithAssociations)
+                  res.json(timeline);
                 })
-                console.log('timeine', timeline);
-                // return res.json(candidateWithAssociations)
-                res.json(timeline);
         })
       })
 
