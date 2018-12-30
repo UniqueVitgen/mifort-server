@@ -110,7 +110,7 @@ DevFeedback.belongsTo(Candidate)
 DevFeedback.belongsTo(FeedbackState);
 
 FeedbackDetails.belongsTo(DevFeedback);
-DevFeedback.hasMany(FeedbackDetails, {as: 'feedbackDetails'});
+DevFeedback.hasMany(FeedbackDetails);
 FeedbackDetails.belongsTo(Requirement);
 
 

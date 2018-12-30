@@ -4,7 +4,7 @@ const {
 const FeedbackDetailsWorker = require('../workers/feedback-details')
 
 const includeArray = [{model:Models.FeedbackState},
-  {model:Models.FeedbackDetails, include: FeedbackDetailsWorker.includeFeedbackDetailsArray, as: 'feedbackDetails'},
+  {model:Models.FeedbackDetails, include: FeedbackDetailsWorker.includeFeedbackDetailsArray},
   ]
 
 function createAssociationObject(body) {
@@ -114,4 +114,7 @@ exports.delete_a_dev_feedback = function(id)  {
 }
 exports.read_a_dev_feedback = function(id)  {
   return Models.DevFeedback.findOne({ where: {id: id}, include: includeArray})
+};
+exports.read_a_dev_feedback_by_interview = function(id)  {
+  return Models.DevFeedback.findOne({ where: {interviewId: id}, include: includeArray})
 };

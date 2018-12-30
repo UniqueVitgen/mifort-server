@@ -11,4 +11,7 @@ app.route('/dev_feedback/:id')
   .get(todoList.read_a_dev_feedback)
   .put(todoList.update_a_dev_feedback)
   .delete(todoList.delete_a_dev_feedback);
+
+app.route('/dev_feedback/interview/:id')
+  .get(todoList.read_a_dev_feedback_by_interview);
 }

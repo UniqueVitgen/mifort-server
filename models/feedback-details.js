@@ -1,5 +1,5 @@
 module.exports = (sequelize, type) => {
-    return sequelize.define('FeedbackDetails', {
+    return sequelize.define('feedbackDetails', {
         id: {
           type: type.INTEGER,
           primaryKey: true,

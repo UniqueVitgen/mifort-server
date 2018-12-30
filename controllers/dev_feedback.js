@@ -49,3 +49,11 @@ exports.read_a_dev_feedback = function(req, res)  {
     })
     .catch(err => res.status(400).json({ err: `User with id = [${err}] doesn\'t exist.`}))
 };
+
+exports.read_a_dev_feedback_by_interview = function(req, res)  {
+  DevFeedbackWorker.read_a_dev_feedback_by_interview(req.params.id)
+    .then(candidateWithAssociations => {
+      return res.json(candidateWithAssociations)
+    })
+    .catch(err => res.status(400).json({ err: `User with id = [${err}] doesn\'t exist.`}))
+};
