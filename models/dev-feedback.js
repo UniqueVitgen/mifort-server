@@ -1,12 +1,9 @@
 module.exports = (sequelize, type) => {
-    return sequelize.define('feedback', {
+    return sequelize.define('DevFeedback', {
         id: {
           type: type.INTEGER,
           primaryKey: true,
           autoIncrement: true
-        },
-        feedbackText: {
-          type: type.STRING
         }
     })
 }

@@ -9,6 +9,7 @@ const routesVacancy = require('./routes/vacancy');
 const routesTeam = require('./routes/team');
 const routesInterview = require('./routes/interview');
 const routesFeedback= require('./routes/feedback');
+const routesDevFeedback= require('./routes/dev_feedback');
 const routesAttachment= require('./routes/attachment');
 const {
   Models
@@ -37,6 +38,7 @@ routesCandidate(app);
 routesVacancy(app);
 routesTeam(app);
 routesFeedback(app);
+routesDevFeedback(app);
 routesInterview(app);
 routesAttachment(app);
 // var routes = require('./routes/candidates'); //importing route

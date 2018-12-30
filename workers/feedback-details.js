@@ -1,0 +1,43 @@
+const {
+  Models
+} = require('../sequelize')
+
+const includeArray = [Models.Requirement]
+
+exports.includeFeedbackDetailsArray = includeArray;
+
+function createAssociationObject(body) {
+  let candidateStatePromise;
+  if(body.feedbackState) {
+  candidateStatePromise = Models.FeedbackState.findOrCreate({ where: { name: body.feedbackState.name }, defaults: { name: body.feedbackState.name }})
+                                       .spread((skill, created) => skill);
+  }
+             return  {
+               feedbackState: candidateStatePromise
+
+             }
+}
+
+exports.find_or_create_a_feedback_details = function(body)  {
+    const promise = createAssociationObject(body);
+    // if(body.id == null) {
+    console.log('body', body);
+      return Models.FeedbackDetails.findOrCreate({where: {feedbackText : body.feedbackText, requirementId : body.requirementId,
+        devFeedbackId: body.devFeedbackId
+      }, include: includeArray})
+      // .then(candidate => {
+      //   return  Models.Candidate.findOne({id: candidate.id})
+      // })
+      // .then(candidate => {
+      //   return createAssociations(candidate, promise)
+      //   .then(candidate => Models.Candidate.findOrCreate({where: {feedbackText : body.feedbackText, requirementId : body.requirementId,
+      //     devFeedbackId: body.devFeedbackId
+      //   }, include: includeArray}))
+      //   .catch(err => {console.error(err);})
+      //   })
+      // })
+    // }
+    // else {
+    //   return Models.FeedbackDetails.findOrCreate({where: {id: body.id}, include: includeArray})
+    // }
+};

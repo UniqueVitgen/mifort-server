@@ -11,6 +11,8 @@ const TeamModel = require('./models/team')
 const ExperienceModel = require('./models/candidate-experience.js')
 const AttachmentModel = require('./models/attachment.js')
 const InterviewModel = require('./models/interview.js')
+const DevFeedbackModel = require('./models/dev-feedback.js')
+const FeedbackDetailsModel = require('./models/feedback-details.js')
 const FeedbackModel = require('./models/feedback.js')
 const FeedbackStateModel = require('./models/feedback-state.js')
 
@@ -63,6 +65,9 @@ const Attachment = AttachmentModel(sequelize, Sequelize)
 const Interview = InterviewModel(sequelize, Sequelize)
 const Feedback = FeedbackModel(sequelize, Sequelize)
 const FeedbackState = FeedbackStateModel(sequelize, Sequelize)
+const DevFeedback = DevFeedbackModel(sequelize, Sequelize)
+const FeedbackDetails = FeedbackDetailsModel(sequelize, Sequelize)
+
 Candidate.belongsToMany(Vacancy, { through: CandidateVacancy, unique: false, onDelete:'CASCADE', onUpdate: 'CASCADE', underscore: false }, {underscored: false})
 Vacancy.belongsToMany(Candidate, { through: CandidateVacancy, unique: false, onDelete:'CASCADE', onUpdate: 'CASCADE'})
 Candidate.belongsToMany(Responsibility, {through: CandidateResponsibility, unique: false, onDelete:'CASCADE', onUpdate: 'CASCADE'})
@@ -100,6 +105,13 @@ Candidate.belongsTo(CandidateState, {as: 'candidateState'})
 Feedback.belongsTo(Candidate)
 Feedback.belongsTo(FeedbackState);
 
+DevFeedback.belongsTo(Interview);
+DevFeedback.belongsTo(Candidate)
+DevFeedback.belongsTo(FeedbackState);
+
+FeedbackDetails.belongsTo(DevFeedback);
+DevFeedback.hasMany(FeedbackDetails, {as: 'feedbackDetails'});
+FeedbackDetails.belongsTo(Requirement);
 
 
 sequelize.sync({ force: false })
@@ -121,7 +133,9 @@ Models = {
   Attachment: Attachment,
   Interview: Interview,
   Feedback: Feedback,
-  FeedbackState: FeedbackState
+  FeedbackState: FeedbackState,
+  DevFeedback: DevFeedback,
+  FeedbackDetails: FeedbackDetails
 }
 
 module.exports = {
