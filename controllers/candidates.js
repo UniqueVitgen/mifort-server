@@ -49,7 +49,9 @@ exports.read_timeline = function(req, res)  {
   Models.Candidate.findOne({ where: {id: req.params.id}, include: includeArrayWithFiles})
     .then(candidateWithAssociations => {
       let timeline = [];
+      if(candidateWithAssociations.attachments) {
       timeline = timeline.concat(candidateWithAssociations.attachments);
+      }
       if(candidateWithAssociations.experiences) {
         timeline = timeline.concat(candidateWithAssociations.experiences.map(object => {object.type = 'contact'; return object;} ))
       }
