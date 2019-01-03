@@ -2,7 +2,7 @@
 npm-debug.log
 .DS_Store
 /.env
-
+/resources/files/uploads
 *.png
 *.jpg
 *.docx
