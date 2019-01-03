@@ -66,7 +66,7 @@ exports.read_timeline = function(req, res)  {
                 if (interviews) {
                     timeline = timeline.concat(interviews);
                 }
-                return Models.DevFeedback.findAll({where: {candidateId: req.params.id}, include: DevFeedbackWorker.includeDevFeedbackArray})
+                return Models.DevFeedback.findAll({where: {candidateId: req.params.id}, include: DevFeedbackWorker.includeDevFeedbackArray, order: DevFeedbackWorker.orderDevFeedbackArray})
                 .then(devFeedbacks => {
                   if(devFeedbacks) {
                       timeline = timeline.concat(devFeedbacks);

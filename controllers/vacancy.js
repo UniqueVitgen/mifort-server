@@ -7,7 +7,9 @@ const CandidateWorker = require('../workers/candidate')
 const includeArrayCandidate = CandidateController.includeArrayCandidate
 const includeArray = [
   Models.Skill,
-  Models.Requirement,
+  {model: Models.Requirement, order: [
+    ['id', 'desc']
+  ]},
   {model:Models.Candidate,
     include: [Models.Skill, Models.Responsibility, {model: Models.Attachment, attributes: ['id', 'filePath', 'attachmentType']}, Models.Experience, {model: Models.CandidateState, as: 'candidateState'}, Models.Contact]}
 ]
@@ -15,7 +17,10 @@ const includeArray = [
 exports.includeArrayVacancy = includeArray;
 
 exports.list_all_vacancies = function (req, res)  {
-  Models.Vacancy.findAll({include: includeArray}).then(vacancies => {
+  Models.Vacancy.findAll({include: includeArray, order: [
+    ['id', 'desc'],
+    [Models.Requirement, 'public', 'desc']
+  ]}).then(vacancies => {
       return res.json(vacancies);})
     .catch(err => res.status(400).json({ err: `User with id = [${err}] doesn\'t exist.`}))
 };

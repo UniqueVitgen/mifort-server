@@ -9,11 +9,16 @@ const includeArray = [
     {model: Models.Candidate, include: CandidateWorker.includeCandidateArray},
     {model: Models.Vacancy, include: VacancyController.includeArrayVacancy}
 ]
+const orderArray = [
+  ['id', 'desc'],
+  [Models.Vacancy, Models.Requirement, 'public', 'desc'],
+  [Models.Vacancy, Models.Requirement, 'required', 'desc']
+]
 
 
 
 exports.list_all_interviews = function (req, res)  {
-  Models.Interview.findAll({include: includeArray}).then(interviews => {
+  Models.Interview.findAll({include: includeArray, order: orderArray}).then(interviews => {
       return res.json(interviews);})
     .catch(err => res.status(400).json({ err: `User with id = [${err}] doesn\'t exist.`}))
 };
@@ -31,7 +36,7 @@ exports.create_a_interview = function(req, res)  {
     //.then(interview => Promise.all(skills).then(storedSkills => interview.addSkills(storedSkills)).then(() => interview))
     //.then(interview => Promise.all(candidatesPromise).then(storedSkills => interview.addCandidates(storedSkills)).then(() => interview))
     //.then(interview => Promise.all(requirementsPromise).then(storedSkills => interview.addRequirements(storedSkills)).then(() => interview))
-    .then(interview => Models.Interview.findOne({ where: {id: interview.id}, include: includeArray}))
+    .then(interview => Models.Interview.findOne({ where: {id: interview.id}, include: includeArray, order: orderArray}))
     .then(interviewWithAssociations => {
       return res.json(interviewWithAssociations)
     })
@@ -39,7 +44,8 @@ exports.create_a_interview = function(req, res)  {
 };
 
 exports.read_a_interview = function(req, res)  {
-  Models.Interview.findOne({ where: {id: req.params.id}, include: includeArray})
+  Models.Interview.findOne({ where: {id: req.params.id}, include: includeArray,
+  order: orderArray})
     .then(interviewWithAssociations => {
       return res.json(interviewWithAssociations)
     })

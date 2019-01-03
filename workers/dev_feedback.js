@@ -7,8 +7,14 @@ const includeArray = [{model:Models.FeedbackState},
   {model:Models.FeedbackDetails, include: FeedbackDetailsWorker.includeFeedbackDetailsArray},
   ]
 
-exports.includeDevFeedbackArray = includeArray;
+const orderArray = [
+    ['id', 'desc'],
+    [Models.FeedbackDetails, Models.Requirement, 'public', 'desc'],
+    [Models.FeedbackDetails, Models.Requirement, 'required', 'desc']
+]
 
+exports.includeDevFeedbackArray = includeArray;
+exports.orderDevFeedbackArray = orderArray;
 function createAssociationObject(body) {
   let feedbackDetails;
   let feedbackStatePromise;
@@ -106,7 +112,7 @@ exports.update_a_dev_feedback = function(id, body) {
 }
 
 exports.list_all_feedbacks = function () {
-  return Models.DevFeedback.findAll({include: includeArray});
+  return Models.DevFeedback.findAll({include: includeArray, order: orderArray});
 }
 
 exports.delete_a_dev_feedback = function(id)  {
@@ -115,8 +121,16 @@ exports.delete_a_dev_feedback = function(id)  {
   })
 }
 exports.read_a_dev_feedback = function(id)  {
-  return Models.DevFeedback.findOne({ where: {id: id}, include: includeArray})
+  return Models.DevFeedback.findOne({ where: {id: id}, include: includeArray,
+    order: orderArray
+    // ,
+    // order: [Models.FeedbackDetails, Models.Requirement, 'public', 'DESC']
+  })
 };
 exports.read_a_dev_feedback_by_interview = function(id)  {
-  return Models.DevFeedback.findOne({ where: {interviewId: id}, include: includeArray})
+  return Models.DevFeedback.findOne({ where: {interviewId: id}, include: includeArray,
+    order: orderArray
+    // ,
+    // order: [Models.FeedbackDetails, Models.Requirement, 'public', 'DESC']
+  })
 };
