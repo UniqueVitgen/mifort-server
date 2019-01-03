@@ -1,0 +1,13 @@
+﻿2018-10-03 22:31:24> Program: Starting Squirrel Updater: --createShortcut slack.exe -l Desktop,StartMenu
+2018-10-03 22:31:24> ApplyReleasesImpl: About to create shortcuts for slack.exe, rootAppDir C:\Users\Юрий\AppData\Local\slack
+2018-10-03 22:31:25> ApplyReleasesImpl: Creating shortcut for slack.exe => C:\Users\Юрий\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Slack Technologies\Slack.lnk
+2018-10-03 22:31:25> ApplyReleasesImpl: About to save shortcut: C:\Users\Юрий\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Slack Technologies\Slack.lnk (target C:\Users\Юрий\AppData\Local\slack\slack.exe, workingDir C:\Users\Юрий\AppData\Local\slack\app-3.3.3, args , toastActivatorCSLID 9a92da87-49f2-51a4-a2b5-718444efc154)
+2018-10-03 22:31:25> ApplyReleasesImpl: Creating shortcut for slack.exe => C:\Users\Юрий\Desktop\Slack.lnk
+2018-10-03 22:31:25> ApplyReleasesImpl: About to save shortcut: C:\Users\Юрий\Desktop\Slack.lnk (target C:\Users\Юрий\AppData\Local\slack\slack.exe, workingDir C:\Users\Юрий\AppData\Local\slack\app-3.3.3, args , toastActivatorCSLID 9a92da87-49f2-51a4-a2b5-718444efc154)
+2018-10-03 22:31:25> ApplyReleasesImpl: Examining Pin: File Explorer.lnk
+2018-10-03 22:31:25> ApplyReleasesImpl: Examining Pin: Google Chrome.lnk
+2018-10-03 22:31:25> ApplyReleasesImpl: Examining Pin: Internet Explorer.lnk
+2018-10-03 22:31:25> ApplyReleasesImpl: Examining Pin: Браузер Opera.lnk
+2018-10-09 16:10:46> Program: Starting Squirrel Updater: --processStart slack.exe --process-start-args --startup
+2018-10-09 16:10:47> Program: Want to launch 'C:\Users\Юрий\AppData\Local\slack\app-3.3.3\slack.exe'
+2018-10-09 16:10:47> Program: About to launch: 'C:\Users\Юрий\AppData\Local\slack\app-3.3.3\slack.exe': --startup
