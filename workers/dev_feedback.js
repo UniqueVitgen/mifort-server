@@ -7,7 +7,8 @@ const includeArray = [{model:Models.FeedbackState},
   {model:Models.FeedbackDetails, include: FeedbackDetailsWorker.includeFeedbackDetailsArray}
   ]
 const includeArrayWithInterviewAndCandidate = includeArray.concat(
-  [{model: Models.Candidate}, {model: Models.Interview}]
+  [{model: Models.Candidate}, {model: Models.Interview, include: [{model: Models.Vacancy}]
+}]
 )
 const orderArray = [
     ['id', 'desc'],
