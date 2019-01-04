@@ -10,8 +10,11 @@ const includeArray = [
   {model: Models.Requirement, order: [
     ['id', 'desc']
   ]},
+  Models.Position,
   {model:Models.Candidate,
-    include: [Models.Skill, Models.Responsibility, {model: Models.Attachment, attributes: ['id', 'filePath', 'attachmentType']}, Models.Experience, {model: Models.CandidateState, as: 'candidateState'}, Models.Contact]}
+    include: [Models.Skill, Models.Responsibility,
+      {model: Models.Attachment, attributes: ['id', 'filePath', 'attachmentType']},
+      Models.Experience, {model: Models.CandidateState, as: 'candidateState'}, Models.Contact]}
 ]
 
 exports.includeArrayVacancy = includeArray;
@@ -42,11 +45,31 @@ function createAssociationObject(body) {
              requirementsPromise = body.requirements.map(skill => Models.Requirement.findOrCreate({ where: { name: skill.name, public: skill.public, required: skill.required }, defaults: { name: skill.name }})
                                      .spread((skill, created) => skill));
             }
+            let positionPromise;
+            if(body.position) {
+              positionPromise = Models.Position.findOrCreate({ where: { name: body.position.name }, defaults: { name: body.position.name }})
+                                                   .spread((skill, created) => skill);
+            }
              return  {
                skills: skills,
                candidates: candidatesPromise,
-               requirements: requirementsPromise
+               requirements: requirementsPromise,
+               position: positionPromise
              }
+}
+
+function createSingleAssociations(body, promise) {
+  return new Promise((resolve, reject) => {
+    return new Promise((resolve2, reject2) => {
+      promise.position.then(position => {
+        body.positionId = position.id;
+        resolve2(body);
+      })
+    })
+    .then(body => {
+      resolve(body)
+    })
+  })
 }
 
 function createAssociations(vacancy, promise) {
@@ -69,6 +92,7 @@ exports.create_a_vacancy = function(req, res)  {
   const body = req.body;
   console.log('vacancy body', body);
   const promise = createAssociationObject(body);
+  createSingleAssociations(body, promise).then(body => {
   Models.Vacancy.create(body, {})
     .then(vacancy => {
       if(promise.skills) {
@@ -97,6 +121,7 @@ exports.create_a_vacancy = function(req, res)  {
       console.error('err -',err);
       res.status(400).json({ err: `create vacancy error = [${err}] doesn\'t exist.`})}
   )
+})
 };
 
 exports.read_a_vacancy = function(req, res)  {
@@ -157,6 +182,7 @@ exports.update_candidates_from_vacancy = function(req, res)  {
 exports.update_a_vacancy = function(req, res) {
   const body = req.body
   const promise = createAssociationObject(body);
+  createSingleAssociations(body, promise).then(body => {
   Models.Vacancy.findOne({where: {id: req.params.id}})
       .then(vacancy => { if (vacancy.id == req.params.id) {
           return vacancy;
@@ -202,6 +228,7 @@ exports.update_a_vacancy = function(req, res) {
     console.log(err);
     res.status(400).json({ err: `User with id = [${err}] doesn\'t exist.`})
   })
+})
   // })
 }
 

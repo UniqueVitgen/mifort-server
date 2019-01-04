@@ -15,6 +15,7 @@ const DevFeedbackModel = require('./models/dev-feedback.js')
 const FeedbackDetailsModel = require('./models/feedback-details.js')
 const FeedbackModel = require('./models/feedback.js')
 const FeedbackStateModel = require('./models/feedback-state.js')
+const PositionModel = require('./models/position.js')
 
 const sequelize = new Sequelize('mifort_server', 'root', 'root', {
   host: 'localhost',
@@ -72,6 +73,7 @@ const Feedback = FeedbackModel(sequelize, Sequelize)
 const FeedbackState = FeedbackStateModel(sequelize, Sequelize)
 const DevFeedback = DevFeedbackModel(sequelize, Sequelize)
 const FeedbackDetails = FeedbackDetailsModel(sequelize, Sequelize)
+const Position = PositionModel(sequelize, Sequelize)
 
 Candidate.belongsToMany(Vacancy, { through: CandidateVacancy, unique: false, onDelete:'CASCADE', onUpdate: 'CASCADE', underscore: false }, {underscored: false})
 Vacancy.belongsToMany(Candidate, { through: CandidateVacancy, unique: false, onDelete:'CASCADE', onUpdate: 'CASCADE'})
@@ -92,6 +94,7 @@ Vacancy.belongsToMany(Skill, {through: VacancySkill, unique: false, onDelete: 'C
 Skill.belongsToMany(Vacancy, {through: VacancySkill, unique: false, onDelete: 'CASCADE', onUpdate: 'CASCADE'})
 Vacancy.belongsToMany(Requirement, {through: VacancyRequirements, unique: false, onDelete: 'CASCADE', onUpdate: 'CASCADE'})
 Requirement.belongsToMany(Vacancy, {through: VacancyRequirements, unique: false, onDelete: 'CASCADE', onUpdate: 'CASCADE'})
+Vacancy.belongsTo(Position)
 
 Experience.belongsTo(Team, {as: 'companyName'})
 Experience.belongsTo(Project)
@@ -106,6 +109,7 @@ Interview.belongsTo(Candidate, {unique: false, onDelete: 'CASCADE', onUpdate: 'C
 Interview.belongsTo(Vacancy, {unique: false, onDelete: 'CASCADE', onUpdate: 'CASCADE'})
 
 Candidate.belongsTo(CandidateState, {as: 'candidateState'})
+Candidate.belongsTo(Position)
 
 Feedback.belongsTo(Candidate)
 Feedback.belongsTo(FeedbackState);
@@ -140,7 +144,8 @@ Models = {
   Feedback: Feedback,
   FeedbackState: FeedbackState,
   DevFeedback: DevFeedback,
-  FeedbackDetails: FeedbackDetails
+  FeedbackDetails: FeedbackDetails,
+  Position: Position
 }
 
 module.exports = {

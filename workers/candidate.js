@@ -6,7 +6,12 @@ const ExperienceWorker = require('../workers/experience')
 const VacancyController = require('../controllers/vacancy')
 
 const includeArray = [
-  Models.Skill, Models.Responsibility, {model: Models.Attachment, attributes: ['id', 'filePath', 'attachmentType']}, {model:Models.Experience, include: ExperienceWorker.includeExperienceArray}, {model: Models.CandidateState, as: 'candidateState'}, Models.Contact
+  Models.Skill, Models.Responsibility,
+  {model: Models.Attachment, attributes: ['id', 'filePath', 'attachmentType']},
+  {model:Models.Experience, include: ExperienceWorker.includeExperienceArray},
+  {model: Models.CandidateState, as: 'candidateState'},
+  Models.Contact,
+  Models.Position
 ]
 
 const includeArrayWithFiles  = [
@@ -14,7 +19,7 @@ const includeArrayWithFiles  = [
 ]
 
 const includeArrayVacancy = [
-  {model: Models.Vacancy, incude: VacancyController.includeArrayVacancy}
+  {model: Models.Vacancy, include: VacancyController.includeArrayVacancy}
 ]
 const orderArrayCandidate = [
   ['id', 'asc'],
@@ -53,6 +58,11 @@ function createAssociationObject(body) {
     candidateStatePromise = Models.CandidateState.findOrCreate({ where: { name: body.candidateState.name }, defaults: { name: body.candidateState.name }})
                                          .spread((skill, created) => skill);
   }
+  let positionPromise;
+  if(body.position) {
+    positionPromise = Models.Position.findOrCreate({ where: { name: body.position.name }, defaults: { name: body.position.name }})
+                                         .spread((skill, created) => skill);
+  }
   let skills;
   if(body.skills) {
     skills = body.skills.map(skill => Models.Skill.findOrCreate({ where: { name: skill.name }, defaults: { name: skill.name }})
@@ -64,9 +74,34 @@ function createAssociationObject(body) {
                attachments: attachments,
                responsibilities: responsibilities,
                candidateState: candidateStatePromise,
+               position: positionPromise,
                skills: skills
 
              }
+}
+
+function createSingleAssociations(body, promise) {
+  return new Promise((resolve, reject) => {
+    return new Promise((resolve2, reject2) => {
+      promise.candidateState.then(candidateState => {
+        body.candidateStateId = candidateState.id;
+        resolve2(body);
+      })
+    })
+    .then(body => {
+      if(promise.position) {
+      return promise.position.then(position => {
+        body.positionId = position.id;
+        return body;
+      })
+    }else {
+      return body;
+    }
+    })
+    .then(body => {
+      resolve(body)
+    })
+  })
 }
 
 function createAssociations(candidate, promise) {
@@ -121,8 +156,8 @@ exports.read_vacancies = function(id)  {
 
 exports.create_a_candidate = function(body)  {
     const promise = createAssociationObject(body);
-    return promise.candidateState.then(candidateState => {
-      body.candidateStateId = candidateState.id;
+    return createSingleAssociations(body, promise)
+      .then(body => {
       return Models.Candidate.create(body, {})
       .then(candidate => {
         console.log('candidate 1', candidate);
@@ -139,8 +174,8 @@ exports.create_a_candidate = function(body)  {
 exports.find_or_create_a_candidate = function(body)  {
     const promise = createAssociationObject(body);
     if(body.id == null) {
-    return promise.candidateState.then(candidateState => {
-      body.candidateStateId = candidateState.id;
+    return createSingleAssociations(body, promise)
+      .then(body => {
       return Models.Candidate.findOrCreate({where: {name : body.name, surname : body.surname,
         birthday: body.birthday, salaryInDollars: body.salaryInDollars, candidateStateId: body.candidateStateId
       }, include: includeArray})
@@ -166,8 +201,8 @@ exports.find_or_create_a_candidate = function(body)  {
 exports.update_a_candidate = function(id, body) {
     const promise = createAssociationObject(body);
 
-  return promise.candidateState.then(candidateState => {
-      body.candidateStateId = candidateState.id;
+    return createSingleAssociations(body, promise)
+      .then(body => {
   return Models.Candidate.findOne({where:{id: id}})
   .then(candidate => {
     console.log('candidate.id', candidate.id);

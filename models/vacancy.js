@@ -8,10 +8,6 @@ module.exports = (sequelize, type) => {
         description: {
             type: type.TEXT
         },
-        position: {
-          type: type.STRING,
-          allowNull: false
-        },
         salaryInDollarsFrom: {
           type: type.DECIMAL,
           validate: {
