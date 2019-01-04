@@ -16,6 +16,10 @@ const includeArrayWithFiles  = [
 const includeArrayVacancy = [
   {model: Models.Vacancy, incude: VacancyController.includeArrayVacancy}
 ]
+const orderArrayCandidate = [
+  ['id', 'asc'],
+  // [Models.Attachment, 'id', 'desc']
+]
 
 exports.includeCandidateArray = includeArray;
 exports.includeCandidateArrayWithFiles = includeArrayWithFiles;
@@ -102,11 +106,11 @@ else {resolve(candidate);}
 }
 
 exports.list_all_candidates = function () {
-  return Models.Candidate.findAll({include: includeArray})
+  return Models.Candidate.findAll({include: includeArray, order: orderArrayCandidate})
 }
 
 exports.read_a_candidate = function(id)  {
-  return Models.Candidate.findOne({ where: {id: id}, include: includeArray})
+  return Models.Candidate.findOne({ where: {id: id}, include: includeArray, order: orderArrayCandidate})
 };
 
 exports.read_vacancies = function(id)  {
@@ -148,13 +152,13 @@ exports.find_or_create_a_candidate = function(body)  {
         return createAssociations(candidate, promise)
         .then(candidate => Models.Candidate.findOrCreate({where: {name : body.name, surname : body.surname,
           birthday: body.birthday, salaryInDollars: body.salaryInDollars, candidateStateId: body.candidateStateId
-        }, include: includeArray}))
+        }, include: includeArray, order: orderArrayCandidate}))
         .catch(err => {console.error(err);})
         })
       })
     }
     else {
-      return Models.Candidate.findOrCreate({where: {id: body.id}, include: includeArray})
+      return Models.Candidate.findOrCreate({where: {id: body.id}, include: includeArray, order: orderArrayCandidate})
     }
 };
 
