@@ -66,7 +66,8 @@ function createAssociations(vacancy, promise) {
 }
 
 exports.create_a_vacancy = function(req, res)  {
-  const body = req.body
+  const body = req.body;
+  console.log('vacancy body', body);
   const promise = createAssociationObject(body);
   Models.Vacancy.create(body, {})
     .then(vacancy => {
