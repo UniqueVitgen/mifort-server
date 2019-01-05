@@ -97,7 +97,8 @@ Requirement.belongsToMany(Vacancy, {through: VacancyRequirements, unique: false,
 Vacancy.belongsTo(Position)
 
 Experience.belongsTo(Team, {as: 'companyName'})
-Experience.belongsTo(Project)
+Experience.belongsTo(Project);
+Experience.belongsTo(Position, {as: 'jobPosition'});
 
 // Interview.belongsTo(CandidateVacancy, {underscore: true})
 // Interview.belongsToMany(Candidate, {through: InterviewCandidate, unique: false, onDelete: 'CASCADE', onUpdate: 'CASCADE'})

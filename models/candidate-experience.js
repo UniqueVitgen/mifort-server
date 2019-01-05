@@ -12,9 +12,6 @@ module.exports = (sequelize, type) => {
         dateTo: {
           type: type.DATE,
           allowNull: false
-        },
-        jobPosition: {
-          type: type.STRING
         }
     })
 }
