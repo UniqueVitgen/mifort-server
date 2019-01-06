@@ -9,6 +9,10 @@ module.exports = (sequelize, type) => {
           type: type.DATE,
           allowNull: false
         },
+        planEndDate: {
+          type: type.DATE,
+          allowNull: false,
+        },
         factDate: {
           type: type.DATE
         }
