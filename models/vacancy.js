@@ -9,13 +9,13 @@ module.exports = (sequelize, type) => {
             type: type.TEXT
         },
         salaryInDollarsFrom: {
-          type: type.DECIMAL,
+          type: type.DECIMAL(65,2),
           validate: {
             min: 0
           }
         },
         salaryInDollarsTo: {
-          type: type.DECIMAL,
+          type: type.DECIMAL(65,2),
           validate: {
             min: 0
           }

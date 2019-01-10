@@ -9,7 +9,7 @@ module.exports = (sequelize, type) => {
         surname: type.STRING,
         birthday: type.DATE,
         salaryInDollars: {
-          type: type.DECIMAL,
+          type: type.DECIMAL(65,2),
           validate: {
             min: 0
           }
