@@ -10,6 +10,7 @@ const ProjectModel = require('./models/project')
 const TeamModel = require('./models/team')
 const ExperienceModel = require('./models/candidate-experience.js')
 const AttachmentModel = require('./models/attachment.js')
+const InterviewerModel = require('./models/interviewer.js')
 const InterviewModel = require('./models/interview.js')
 const DevFeedbackModel = require('./models/dev-feedback.js')
 const FeedbackDetailsModel = require('./models/feedback-details.js')
@@ -53,8 +54,7 @@ const VacancyRequirements = sequelize.define('vacancy_requirement', {})
 
 const ProjectTeam = sequelize.define('project_team', {})
 
-const InterviewCandidate = sequelize.define('interview_candidate')
-const InterviewVacancy = sequelize.define('interview_vacancy')
+const InterviewInterviewer = sequelize.define('interview_Interviewer')
 
 const Candidate = CandidateModel(sequelize, Sequelize);
 const Vacancy = VacancyModel(sequelize, Sequelize);
@@ -69,6 +69,7 @@ const Project = ProjectModel(sequelize, Sequelize)
 const Attachment = AttachmentModel(sequelize, Sequelize)
 
 const Interview = InterviewModel(sequelize, Sequelize)
+const Interviewer = InterviewerModel(sequelize, Sequelize)
 const Feedback = FeedbackModel(sequelize, Sequelize)
 const FeedbackState = FeedbackStateModel(sequelize, Sequelize)
 const DevFeedback = DevFeedbackModel(sequelize, Sequelize)
@@ -95,6 +96,10 @@ Skill.belongsToMany(Vacancy, {through: VacancySkill, unique: false, onDelete: 'C
 Vacancy.belongsToMany(Requirement, {through: VacancyRequirements, unique: false, onDelete: 'CASCADE', onUpdate: 'CASCADE'})
 Requirement.belongsToMany(Vacancy, {through: VacancyRequirements, unique: false, onDelete: 'CASCADE', onUpdate: 'CASCADE'})
 Vacancy.belongsTo(Position)
+
+Interview.belongsToMany(Interviewer, {through: InterviewInterviewer, unique: false, onDelete: 'CASCADE', onUpdate: 'CASCADE'})
+Interviewer.belongsToMany(Interview, {through: InterviewInterviewer, unique: false, onDelete: 'CASCADE', onUpdate: 'CASCADE'})
+Interviewer.hasOne(Attachment);
 
 Experience.belongsTo(Team, {as: 'companyName'})
 Experience.belongsTo(Project);
@@ -143,6 +148,7 @@ Models = {
   Project: Project,
   Attachment: Attachment,
   Interview: Interview,
+  Interviewer: Interviewer,
   Feedback: Feedback,
   FeedbackState: FeedbackState,
   DevFeedback: DevFeedback,

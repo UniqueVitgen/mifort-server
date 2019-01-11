@@ -66,6 +66,22 @@ exports.upload_an_attachment = function(id, file, attachmentType) {
       });
 }
 
+exports.upload_an_attachment_to_interviewer = function(id, file, attachmentType) {
+  return Models.Interviewer.findOne({where: {id: id}}).then(candidate => {
+      return Models.Attachment.create({
+        interviewerId: id,
+          filePath: file.path,
+		      type: file.mimetype,
+		      name: file.originalname,
+          attachmentType: attachmentType,
+		      data: fs.readFileSync(file.path)
+        })
+        .catch(err => {
+          console.error(err);
+        })
+    })
+}
+
 
 exports.downloadFile = (id, res) => {
 	Models.Attachment.findOne({where: {id: id}}).then(file => {

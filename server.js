@@ -8,6 +8,7 @@ const routesCandidate = require('./routes/candidates');
 const routesVacancy = require('./routes/vacancy');
 const routesTeam = require('./routes/team');
 const routesInterview = require('./routes/interview');
+const routesInterviewer = require('./routes/interviewer');
 const routesFeedback= require('./routes/feedback');
 const routesDevFeedback= require('./routes/dev_feedback');
 const routesAttachment= require('./routes/attachment');
@@ -43,6 +44,7 @@ routesTeam(app);
 routesFeedback(app);
 routesDevFeedback(app);
 routesInterview(app);
+routesInterviewer(app);
 routesAttachment(app);
 routesPosition(app);
 // var routes = require('./routes/candidates'); //importing route
