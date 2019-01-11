@@ -7,3 +7,6 @@ npm-debug.log
 *.jpg
 *.docx
 *.mp4
+# file: ~/.gitignore_global
+.DS_Store
+.idea
