@@ -37,7 +37,7 @@ function createAssociationObject(body) {
   }
   let contacts;
   if(body.contacts) {
-    contacts = body.contacts.map(skill => Models.Contact.findOrCreate({ where: { contactDetails: skill.contactDetails,  contactType: skill.contactType}, defaults: { contactDetails: skill.contactDetails,  contactType: skill.contactType}})
+    contacts = body.contacts.map(skill => Models.Contact.findOrCreate({ where: { contactDetails: skill.contactDetails,  contactType: skill.contactType, preferred: skill.preferred}, defaults: { contactDetails: skill.contactDetails,  contactType: skill.contactType, preferred: skill.preferred}})
                                        .spread((skill, created) => skill));
   }
   let attachments;

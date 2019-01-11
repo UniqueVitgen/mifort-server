@@ -11,6 +11,10 @@ module.exports = (sequelize, type) => {
         },
         contactDetails: {
           type: type.STRING
+        },
+        preferred: {
+            type: type.BOOLEAN,
+            defaultValue: false
         }
     })
 }
