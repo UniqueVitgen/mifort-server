@@ -18,6 +18,10 @@ const includeArrayWithFiles  = [
   Models.Skill, Models.Responsibility, {model: Models.Attachment}, {model:Models.Experience, include: ExperienceWorker.includeExperienceArray}, {model: Models.CandidateState, as: 'candidateState'}, Models.Contact
 ]
 
+const includeArrayWithInterview = includeArray.concat([
+  {model: Models.Interview}
+])
+
 const includeArrayVacancy = [
   {model: Models.Vacancy, include: VacancyController.includeArrayVacancy}
 ]
@@ -141,7 +145,7 @@ else {resolve(candidate);}
 }
 
 exports.list_all_candidates = function () {
-  return Models.Candidate.findAll({include: includeArray, order: orderArrayCandidate})
+  return Models.Candidate.findAll({include: includeArrayWithInterview, order: orderArrayCandidate})
 }
 
 exports.read_a_candidate = function(id)  {

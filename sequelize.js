@@ -109,6 +109,7 @@ Experience.belongsTo(Position, {as: 'jobPosition'});
 Interview.belongsTo(Candidate, {unique: false, onDelete: 'CASCADE', onUpdate: 'CASCADE'})
 Interview.belongsTo(Vacancy, {unique: false, onDelete: 'CASCADE', onUpdate: 'CASCADE'})
 
+Candidate.hasMany(Interview);
 Candidate.belongsTo(CandidateState, {as: 'candidateState'})
 Candidate.belongsTo(Position)
 
