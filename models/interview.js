@@ -13,8 +13,9 @@ module.exports = (sequelize, type) => {
           type: type.DATE,
           allowNull: false,
         },
-        factDate: {
-          type: type.DATE
+        completed: {
+          type: type.BOOLEAN,
+          defaultValue: false
         }
     })
 }
