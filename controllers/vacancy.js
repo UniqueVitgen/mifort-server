@@ -13,6 +13,7 @@ const includeArray = [
   Models.Position,
   {model:Models.Candidate,
     include: [Models.Skill, Models.Responsibility,
+      Models.Interview,
       {model: Models.Attachment, attributes: ['id', 'filePath', 'attachmentType']},
       Models.Experience, {model: Models.CandidateState, as: 'candidateState'}, Models.Contact]}
 ]
