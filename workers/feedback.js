@@ -21,11 +21,7 @@ exports.list_all_feedbacks = function () {
 }
 
 exports.create_a_feedback = function (body) {
-  const promiseObject = createAssociationObject(body);
-  return promiseObject.feedbackState.then(feedbackState => {
-    body.feedbackStateId = feedbackState.id;
     return Models.Feedback.create(body, {include: includeArray});
-  })
 }
 
 exports.read_a_feedback = function(id)  {
@@ -42,9 +38,6 @@ exports.delete_a_feedback = function(id)  {
 
 exports.update_a_feedback = function (id, body) {
   const promiseObject = createAssociationObject(body);
-  if(promiseObject.feedbackState) {
-  return promiseObject.feedbackState.then(feedbackState => {
-    body.feedbackStateId = feedbackState.id;
         return Models.Feedback.findOne({where: {id: id}, include: includeArray})  .then(candidate => {
             for(let prop in  body) {
               candidate[prop] = body[prop];
@@ -58,26 +51,4 @@ exports.update_a_feedback = function (id, body) {
             console.log(err);
             //res.status(400).json({ err: `User with id = [${err}] doesn\'t exist.`})
           })
-        })
-  }
-  else {
-      return Models.Feedback.findOne({where: {id: id}, include: includeArray})  .then(candidate => {
-
-        if (candidate.id == id) {
-          for(let prop in  body) {
-            candidate[prop] = body[prop];
-          }
-            // res.status(200).send({
-            //   message: 'ok'
-            // })
-          return candidate.save({include: includeArray});
-        }
-
-        })
-        .catch(err => {
-          console.log(err);
-          //res.status(400).json({ err: `User with id = [${err}] doesn\'t exist.`})
-        })
-
-  }
 }
