@@ -2,7 +2,7 @@ const {
   Models
 } = require('../sequelize')
 
-const includeArray = [Models.FeedbackState, Models.Candidate]
+const includeArray = [Models.Candidate]
 
 function createAssociationObject(body) {
   let candidateStatePromise;
