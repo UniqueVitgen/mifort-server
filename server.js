@@ -1,3 +1,4 @@
+const Sequelize = require('sequelize')
 var express = require('express');
 var bodyParser = require('body-parser');
 const CONNECT_URI = process.env.MONGODB_URI || 'mongodb://localhost/testdb';

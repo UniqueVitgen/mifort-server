@@ -119,7 +119,6 @@ Candidate.belongsTo(CandidateState, {as: 'candidateState'})
 Candidate.belongsTo(Position)
 
 Feedback.belongsTo(Candidate)
-Feedback.belongsTo(FeedbackState);
 
 DevFeedback.belongsTo(Interview);
 DevFeedback.belongsTo(Candidate)

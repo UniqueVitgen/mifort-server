@@ -3,8 +3,11 @@ const {
 } = require('../sequelize')
 
 const CandidateWorker = require('../workers/candidate')
+const InterviewWorker = require('../workers/interview')
 const InterviewerWorker = require('../workers/interviewer')
 const VacancyController = require('../controllers/vacancy')
+const Sequelize = require('sequelize');
+const Op = Sequelize.Op;
 
 const includeArray = [
     {model: Models.Candidate, include: CandidateWorker.includeCandidateArray},
@@ -107,6 +110,14 @@ exports.update_a_interview = function(req, res) {
     res.status(400).json({ err: `User with id = [${err}] doesn\'t exist.`})
   })
   // })
+}
+
+
+exports.get_all_interviews_by_candidate = function(req,res) {
+  InterviewWorker.get_all_interviews_by_candidate(req.params.id)
+  .then(interviews => {
+    res.json(interviews);
+  })
 }
 
 exports.delete_a_interview = function(req, res)  {

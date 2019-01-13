@@ -6,6 +6,8 @@ module.exports = function(app) {
         .get(todoList.list_all_interviews)
         .post(todoList.create_a_interview);
 
+    app.route('/interview/candidate/:id')
+        .get(todoList.get_all_interviews_by_candidate);
 
     app.route('/interview/:id')
         .get(todoList.read_a_interview)

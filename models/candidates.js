@@ -1,3 +1,4 @@
+const Interview = require('./interview');
 module.exports = (sequelize, type) => {
     return sequelize.define('candidate', {
         id: {
@@ -15,6 +16,6 @@ module.exports = (sequelize, type) => {
           }
         }
 
-    }, {
-      })
+    },{})
+
 }

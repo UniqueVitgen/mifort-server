@@ -1,6 +1,8 @@
 const {
   Models
 } = require('../sequelize')
+const Sequelize = require('sequelize');
+const Op = Sequelize.Op;
 
 const CandidateController = require('./candidates.js')
 const CandidateWorker = require('../workers/candidate')
@@ -13,8 +15,13 @@ const includeArray = [
   Models.Position,
   {model:Models.Candidate,
     include: [Models.Skill, Models.Responsibility,
-      Models.Interview,
       {model: Models.Attachment, attributes: ['id', 'filePath', 'attachmentType']},
+        {model: Models.Interview,
+        where: {
+          planDate: {
+            [Op.gt]: new Date()
+          }
+        }, required: false},
       Models.Experience, {model: Models.CandidateState, as: 'candidateState'}, Models.Contact]}
 ]
 
@@ -23,7 +30,8 @@ exports.includeArrayVacancy = includeArray;
 exports.list_all_vacancies = function (req, res)  {
   Models.Vacancy.findAll({include: includeArray, order: [
     ['id', 'desc'],
-    [Models.Requirement, 'public', 'desc']
+    [Models.Requirement, 'public', 'desc'],
+    [Models.Candidate, Models.Interview, 'planDate', 'asc']
   ]}).then(vacancies => {
       return res.json(vacancies);})
     .catch(err => res.status(400).json({ err: `User with id = [${err}] doesn\'t exist.`}))

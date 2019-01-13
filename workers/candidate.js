@@ -1,7 +1,10 @@
 const {
   Models
 } = require('../sequelize')
+const Sequelize = require('sequelize');
+const Op = Sequelize.Op;
 const CandidateWorker = require('../workers/candidate')
+const InterviewWorker = require('../workers/interview')
 const ExperienceWorker = require('../workers/experience')
 const VacancyController = require('../controllers/vacancy')
 
@@ -19,19 +22,31 @@ const includeArrayWithFiles  = [
 ]
 
 const includeArrayWithInterview = includeArray.concat([
-  {model: Models.Interview}
+  {model: Models.Interview,
+  where: {
+    planDate: {
+      [Op.gt]: new Date()
+    }
+  }, required: false}
 ])
 
 const includeArrayVacancy = [
-  {model: Models.Vacancy, include: VacancyController.includeArrayVacancy}
+  {model: Models.Vacancy, include: VacancyController.includeArrayVacancy
+  }
 ]
 const orderArrayCandidate = [
-  ['id', 'asc'],
+  ['id', 'asc']
   // [Models.Attachment, 'id', 'desc']
 ]
+const orderArrayCandidateWithInterview = orderArrayCandidate.concat([
+  [Models.Interview, 'planDate', 'ASC']
+])
 
 exports.includeCandidateArray = includeArray;
 exports.includeCandidateArrayWithFiles = includeArrayWithFiles;
+exports.includeCandidateArrayWithInterview = includeArrayWithInterview;
+
+exports.orderArrayCandidateWithInterview = orderArrayCandidateWithInterview;
 
 function createAssociationObject(body) {
   let experiences;
@@ -145,7 +160,7 @@ else {resolve(candidate);}
 }
 
 exports.list_all_candidates = function () {
-  return Models.Candidate.findAll({include: includeArrayWithInterview, order: orderArrayCandidate})
+  return Models.Candidate.findAll({include: includeArrayWithInterview, order: orderArrayCandidateWithInterview})
 }
 
 exports.read_a_candidate = function(id)  {
