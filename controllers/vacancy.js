@@ -25,14 +25,16 @@ const includeArray = [
       Models.Experience, {model: Models.CandidateState, as: 'candidateState'}, Models.Contact]}
 ]
 
+const orderArray = [
+  ['id', 'desc'],
+  [Models.Requirement, 'public', 'desc'],
+  [Models.Candidate, Models.Interview, 'planDate', 'asc']
+]
+
 exports.includeArrayVacancy = includeArray;
 
 exports.list_all_vacancies = function (req, res)  {
-  Models.Vacancy.findAll({include: includeArray, order: [
-    ['id', 'desc'],
-    [Models.Requirement, 'public', 'desc'],
-    [Models.Candidate, Models.Interview, 'planDate', 'asc']
-  ]}).then(vacancies => {
+  Models.Vacancy.findAll({include: includeArray, order: orderArray}).then(vacancies => {
       return res.json(vacancies);})
     .catch(err => res.status(400).json({ err: `User with id = [${err}] doesn\'t exist.`}))
 };
@@ -134,7 +136,7 @@ exports.create_a_vacancy = function(req, res)  {
 };
 
 exports.read_a_vacancy = function(req, res)  {
-  Models.Vacancy.findOne({ where: {id: req.params.id}, include: includeArray})
+  Models.Vacancy.findOne({ where: {id: req.params.id}, include: includeArray, order: orderArray})
     .then(vacancyWithAssociations => {
       return res.json(vacancyWithAssociations)
         // return res.json(includeArrayCandidate)
