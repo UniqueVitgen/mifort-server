@@ -2,7 +2,7 @@ const {
   Models
 } = require('../sequelize')
 
-
+const InterviewController = require('../controllers/interview');
 const CandidateWorker = require('../workers/candidate');
 const AttachmentWorker = require('../workers/attachment');
 const DevFeedbackWorker = require('../workers/dev_feedback');
@@ -12,6 +12,7 @@ const {
 
 const includeArray = CandidateWorker.includeCandidateArray;
 const includeArrayWithFiles = CandidateWorker.includeCandidateArrayWithFiles;
+
 
 exports.includeArrayCandidate = includeArray;
 
@@ -61,7 +62,7 @@ exports.read_timeline = function(req, res)  {
         timeline = timeline.concat(feedbacks);
         // return res.json(candidateWithAssociations)
 
-        return Models.Interview.findAll( {where: {candidateId: req.params.id}})
+        return Models.Interview.findAll( {where: {candidateId: req.params.id}, include: InterviewController.includeArray})
             .then(interviews => {
                 if (interviews) {
                     timeline = timeline.concat(interviews);

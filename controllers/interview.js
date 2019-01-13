@@ -12,7 +12,7 @@ const Op = Sequelize.Op;
 const includeArray = [
     {model: Models.Candidate, include: CandidateWorker.includeCandidateArray},
     {model: Models.Vacancy, include: VacancyController.includeArrayVacancy},
-    {model: Models.Interviewer}
+    {model: Models.Interviewer, include: [Models.Attachment]}
 ]
 const orderArray = [
   ['id', 'desc'],
@@ -20,7 +20,7 @@ const orderArray = [
   [Models.Vacancy, Models.Requirement, 'required', 'desc']
 ]
 
-
+exports.includeArray = includeArray;
 
 function createAssociationObject(body) {
   let interviewers;
