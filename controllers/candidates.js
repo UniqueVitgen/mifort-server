@@ -73,11 +73,11 @@ exports.read_timeline = function(req, res)  {
                       timeline = timeline.concat(devFeedbacks);
                   }
                   timeline = timeline.sort((a,b) => {
-                      return new Date(a.createdAt).getTime() < new Date(b.createdAt).getTime();
+                      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
                     })
-                    console.log('timeine', timeline);
+                    // return timeline;
+                    res.json(timeline)
                     // return res.json(candidateWithAssociations)
-                  res.json(timeline);
                 })
         })
       })

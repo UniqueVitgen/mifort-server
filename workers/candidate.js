@@ -35,8 +35,8 @@ const includeArrayVacancy = [
   }
 ]
 const orderArrayCandidate = [
-  ['id', 'asc']
-  // [Models.Attachment, 'id', 'desc']
+  ['id', 'asc'],
+  [Models.Attachment, 'id', 'asc']
 ]
 const orderArrayCandidateWithInterview = orderArrayCandidate.concat([
   [Models.Interview, 'planDate', 'ASC']

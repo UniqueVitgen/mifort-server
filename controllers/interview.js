@@ -12,7 +12,7 @@ const Op = Sequelize.Op;
 const includeArray = [
     {model: Models.Candidate, include: CandidateWorker.includeCandidateArray},
     {model: Models.Vacancy, include: VacancyController.includeArrayVacancy},
-    {model: Models.Interviewer, include: [Models.Attachment]}
+    {model: Models.Interviewer, include: [{model:Models.Attachment, attributes: ['id', 'filePath', 'attachmentType']}]}
 ]
 const orderArray = [
   ['id', 'desc'],
