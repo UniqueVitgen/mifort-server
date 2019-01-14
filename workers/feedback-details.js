@@ -39,7 +39,8 @@ exports.find_or_create_a_feedback_details = function(body)  {
       .then(feedbackDetails => {
         // console.log('feedbackDetails after save', feedbackDetails);
         return Models.FeedbackDetails.findOrCreate({where: { requirementId : body.requirementId,
-          devFeedbackId: body.devFeedbackId
+          devFeedbackId: body.devFeedbackId,
+          feedbackText: body.feedbackText
         }, include: includeArray})
       });
       // .then(feedbackDetails => {
